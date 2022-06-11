@@ -7,11 +7,14 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using DotNetRdfExtensions.Models;
+using VDS.RDF;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -23,6 +26,11 @@ namespace BOE
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        IGraph graph = new Graph();
+        ObservableCollection<DTDLInterface> ExtendsCollection = new ObservableCollection<DTDLInterface>();
+        ObservableCollection<LocalizedString> DisplayNameCollection = new ObservableCollection<LocalizedString>();
+        ObservableCollection<LocalizedString> DescriptionCollection = new ObservableCollection<LocalizedString>();
+
         public MainWindow()
         {
             this.InitializeComponent();
@@ -38,14 +46,26 @@ namespace BOE
             rootNode2.Children.Add(new TreeViewNode() { Content = "Child 8" });
             InheritanceHierarchyView.RootNodes.Add(rootNode1);
             InheritanceHierarchyView.RootNodes.Add(rootNode2);
-            //InheritanceHierarchyView.
-            //InheritanceHierarchyView
-        }
 
-        /*
-        private void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
-        }*/
+            IUriNode personNode = graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Person;1"));
+            IUriNode organizationNode = graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Organization;1"));
+            DTDLInterface personInterface = new DTDLInterface(personNode, graph);
+            DTDLInterface organizationInterface = new DTDLInterface(organizationNode, graph);
+            ExtendsCollection.Add(personInterface);
+            ExtendsCollection.Add(organizationInterface);
+            ExtendsListView.ItemsSource = ExtendsCollection;
+
+            LocalizedString displayNameEnglish = new("En", "Agent");
+            LocalizedString displayNameItalian = new("It", "Agento");
+            DisplayNameCollection.Add(displayNameEnglish);
+            DisplayNameCollection.Add(displayNameItalian);
+
+            LocalizedString descriptionEnglish = new("En", "An organization of any sort(e.g., a business, association, project, consortium, tribe, etc.)");
+            LocalizedString descriptionSwedish = new("Se", "En organisation av något slag (exempelvis företag, förening, projekt, konsortium, stam, etc.)");
+            DescriptionCollection.Add(descriptionEnglish);
+            DescriptionCollection.Add(descriptionSwedish);
+        }
     }
+
+    public record LocalizedString(string Language, string Content);
 }
