@@ -43,7 +43,7 @@
     <ProjectReference Include="..\DotNetRdfExtensions\DotNetRdfExtensions.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="InterfacePage.xaml">
+    <Page Update="GUI\InterfacePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
