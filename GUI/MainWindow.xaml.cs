@@ -66,9 +66,9 @@ namespace BOE.GUI
             }
         }
 
-        public ObservableCollection<DTDLInterface> IEnumerableToCollection()
+        public static ObservableCollection<object> IEnumerableToObservableCollection(IEnumerable<object> members)
         {
-            return new ObservableCollection<DTDLInterface>();
+            return new ObservableCollection<object>(members);
         }
 
         private void ParsePath(string path)

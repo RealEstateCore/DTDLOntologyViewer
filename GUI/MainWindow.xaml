@@ -40,7 +40,7 @@
                     <TreeView x:Name="InheritanceHierarchyView" VerticalAlignment="Stretch" SelectionMode="Single" CanReorderItems="False" CanDrag="False" CanDragItems="False" ItemsSource="{x:Bind RootInterfaces}" ItemInvoked="InheritanceHierarchyView_InterfaceSelected">
                         <TreeView.ItemTemplate>
                             <DataTemplate x:DataType="dnreModels:DTDLInterface">
-                                <TreeViewItem ItemsSource="{x:Bind ExtendedBy}">
+                                <TreeViewItem ItemsSource="{x:Bind local:MainWindow.IEnumerableToObservableCollection(ExtendedBy)}">
                                     <TextBlock Text="{x:Bind DisplayName}" />
                                 </TreeViewItem>
                             </DataTemplate>
