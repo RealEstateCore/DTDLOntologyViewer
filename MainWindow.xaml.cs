@@ -15,6 +15,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using DotNetRdfExtensions.Models;
 using VDS.RDF;
+using DotNetRdfExtensions;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,59 +27,71 @@ namespace BOE
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        readonly IGraph graph = new Graph();
-        DTDLInterface? selectedInterface;
-        ObservableCollection<DTDLInterface> ExtendsCollection = new();
-        ObservableCollection<LocalizedString> DisplayNameCollection = new();
-        ObservableCollection<LocalizedString> DescriptionCollection = new();
+        public IGraph Graph { get; }
+        public ObservableCollection<DTDLInterface> RootInterfaces { get; }
+
+        private string? _loadedPath;
+        public string? LoadedPath
+        {
+            get => _loadedPath;
+            set
+            {
+                if (value != null)
+                {
+                    ParsePath(value);
+                    DrawInheritanceTree();
+                    _loadedPath = value;
+                }
+            }
+        }
 
         public MainWindow()
         {
             this.InitializeComponent();
+            Graph = new Graph();
+            RootInterfaces = new ObservableCollection<DTDLInterface>();
+        }
 
-            // TODO: Implement real loading somewhere
-            IUriNode agentNode = graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Agent;1"));
-            selectedInterface = new DTDLInterface(agentNode, graph);
+        private void DrawInheritanceTree()
+        {
+            // Fake real data
+            IUriNode agentNode = Graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Agent;1"));
+            IUriNode personNode = Graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Person;1"));
+            IUriNode organizationNode = Graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Organization;1"));
+            IUriNode RDF_type = Graph.CreateUriNode(RDF.type);
+            IUriNode DTDL_Interface = Graph.CreateUriNode(DTDL.Interface);
+            IUriNode dtdlExtends = Graph.CreateUriNode(DTDL.extends);
+            Graph.Assert(agentNode, RDF_type, DTDL_Interface);
+            Graph.Assert(personNode, RDF_type, DTDL_Interface);
+            Graph.Assert(organizationNode, RDF_type, DTDL_Interface);
+            Graph.Assert(personNode, dtdlExtends, agentNode);
+            Graph.Assert(organizationNode, dtdlExtends, agentNode);
 
-            if (selectedInterface != null)
+            RootInterfaces.Clear();
+            IEnumerable<DTDLInterface> noParentInterfaces = Graph.GetDtdlInterfaces().Where(dtdlInterface => !dtdlInterface.Extends.Any());
+            foreach (DTDLInterface dtdlInterface in noParentInterfaces)
             {
-                DtmiTextBlock.Text = selectedInterface.Dtmi;
+                RootInterfaces.Add(dtdlInterface);
             }
+        }
 
-            TreeViewNode rootNode1 = new TreeViewNode() { Content = "Root 1" };
-            rootNode1.Children.Add(new TreeViewNode() { Content = "Child 1" });
-            rootNode1.Children.Add(new TreeViewNode() { Content = "Child 2" });
-            rootNode1.Children.Add(new TreeViewNode() { Content = "Child 3" });
-            rootNode1.Children.Add(new TreeViewNode() { Content = "Child 4" });
-            TreeViewNode rootNode2 = new TreeViewNode() { Content = "Root 2" };
-            rootNode2.Children.Add(new TreeViewNode() { Content = "Child 5" });
-            rootNode2.Children.Add(new TreeViewNode() { Content = "Child 6" });
-            rootNode2.Children.Add(new TreeViewNode() { Content = "Child 7" });
-            rootNode2.Children.Add(new TreeViewNode() { Content = "Child 8" });
-            InheritanceHierarchyView.RootNodes.Add(rootNode1);
-            InheritanceHierarchyView.RootNodes.Add(rootNode2);
+        private void ParsePath(string path)
+        {
+            // TODO: Implement loading from single file or directory of files
+        }
 
-            IUriNode personNode = graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Person;1"));
-            IUriNode organizationNode = graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Organization;1"));
-            DTDLInterface personInterface = new DTDLInterface(personNode, graph);
-            DTDLInterface organizationInterface = new DTDLInterface(organizationNode, graph);
-            ExtendsCollection.Add(personInterface);
-            ExtendsCollection.Add(organizationInterface);
-            ExtendsListView.ItemsSource = ExtendsCollection;
+        private void OpenMenu_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Implement a window to select path
+            LoadedPath = "c:\\test\\test\\test";
+        }
 
-            LocalizedString displayNameEnglish = new("En", "Agent");
-            LocalizedString displayNameItalian = new("It", "Agento");
-            DisplayNameCollection.Add(displayNameEnglish);
-            DisplayNameCollection.Add(displayNameItalian);
-            DisplayNameListView.ItemsSource = DisplayNameCollection;
-
-            LocalizedString descriptionEnglish = new("En", "An organization of any sort(e.g., a business, association, project, consortium, tribe, etc.)");
-            LocalizedString descriptionSwedish = new("Se", "En organisation av något slag (exempelvis företag, förening, projekt, konsortium, stam, etc.)");
-            DescriptionCollection.Add(descriptionEnglish);
-            DescriptionCollection.Add(descriptionSwedish);
-            DescriptionListView.ItemsSource = DescriptionCollection;
+        private void InheritanceHierarchyView_InterfaceSelected(TreeView sender, TreeViewItemInvokedEventArgs args)
+        {
+            InterfacePage.SelectedInterface = (DTDLInterface)args.InvokedItem;
         }
     }
 
+    // TODO: Remove this scaffolding
     public record LocalizedString(string Language, string Content);
 }

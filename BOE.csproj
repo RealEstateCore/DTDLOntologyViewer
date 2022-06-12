@@ -12,6 +12,9 @@
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="InterfacePage.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -38,5 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetRdfExtensions\DotNetRdfExtensions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="InterfacePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
