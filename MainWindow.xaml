@@ -50,20 +50,24 @@
                         <StackPanel Orientation="Vertical" Padding="10">
                             <StackPanel.Resources>
                                 <DataTemplate x:Key="LocalizedStringListViewTemplate" x:DataType="local:LocalizedString">
-                                    <TextBlock Text="{x:Bind ToString()}" x:Phase="1" Margin="0,5,0,5"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{x:Bind Language}" FontWeight="Bold" />
+                                        <TextBlock Text=":" FontWeight="Bold" Margin="0,0,5,0" />
+                                        <TextBlock Text="{x:Bind Content}"/>
+                                    </StackPanel>
                                 </DataTemplate>
                                 <DataTemplate x:Key="DTMIInterfaceListViewTemplate" x:DataType="dnreModels:DTDLInterface">
                                     <TextBlock Text="{x:Bind Node.Uri.ToString()}" x:Phase="1" Margin="0,5,0,5"/>
                                 </DataTemplate>
                             </StackPanel.Resources>
                             <TextBlock FontWeight="Bold">DTMI:</TextBlock>
-                            <TextBlock Margin="0,0,0,10">dtmi:digitaltwins:rec_3_3:core:Agent;1</TextBlock>
+                            <TextBlock x:Name="DtmiTextBlock" Margin="0,0,0,10"></TextBlock>
 
                             <TextBlock FontWeight="Bold">Display Name:</TextBlock>
-                            <TextBox Margin="0,0,0,10"></TextBox>
+                            <ListView x:Name="DisplayNameListView" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" Margin="0,0,0,10" />
 
                             <TextBlock FontWeight="Bold">Description:</TextBlock>
-                            <TextBox Margin="0,0,0,10" TextWrapping="Wrap" Height="100" AcceptsReturn="True"></TextBox>
+                            <ListView x:Name="DescriptionListView" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" Margin="0,0,0,10" />
 
                             <TextBlock FontWeight="Bold">Extends:</TextBlock>
                             <ListView x:Name="ExtendsListView" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" />

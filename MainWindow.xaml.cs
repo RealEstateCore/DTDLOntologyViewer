@@ -26,14 +26,25 @@ namespace BOE
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        IGraph graph = new Graph();
-        ObservableCollection<DTDLInterface> ExtendsCollection = new ObservableCollection<DTDLInterface>();
-        ObservableCollection<LocalizedString> DisplayNameCollection = new ObservableCollection<LocalizedString>();
-        ObservableCollection<LocalizedString> DescriptionCollection = new ObservableCollection<LocalizedString>();
+        readonly IGraph graph = new Graph();
+        DTDLInterface? selectedInterface;
+        ObservableCollection<DTDLInterface> ExtendsCollection = new();
+        ObservableCollection<LocalizedString> DisplayNameCollection = new();
+        ObservableCollection<LocalizedString> DescriptionCollection = new();
 
         public MainWindow()
         {
             this.InitializeComponent();
+
+            // TODO: Implement real loading somewhere
+            IUriNode agentNode = graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Agent;1"));
+            selectedInterface = new DTDLInterface(agentNode, graph);
+
+            if (selectedInterface != null)
+            {
+                DtmiTextBlock.Text = selectedInterface.Dtmi;
+            }
+
             TreeViewNode rootNode1 = new TreeViewNode() { Content = "Root 1" };
             rootNode1.Children.Add(new TreeViewNode() { Content = "Child 1" });
             rootNode1.Children.Add(new TreeViewNode() { Content = "Child 2" });
@@ -59,11 +70,13 @@ namespace BOE
             LocalizedString displayNameItalian = new("It", "Agento");
             DisplayNameCollection.Add(displayNameEnglish);
             DisplayNameCollection.Add(displayNameItalian);
+            DisplayNameListView.ItemsSource = DisplayNameCollection;
 
             LocalizedString descriptionEnglish = new("En", "An organization of any sort(e.g., a business, association, project, consortium, tribe, etc.)");
             LocalizedString descriptionSwedish = new("Se", "En organisation av något slag (exempelvis företag, förening, projekt, konsortium, stam, etc.)");
             DescriptionCollection.Add(descriptionEnglish);
             DescriptionCollection.Add(descriptionSwedish);
+            DescriptionListView.ItemsSource = DescriptionCollection;
         }
     }
 
