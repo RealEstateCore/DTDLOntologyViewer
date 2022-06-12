@@ -41,7 +41,7 @@
                         <TreeView.ItemTemplate>
                             <DataTemplate x:DataType="dnreModels:DTDLInterface">
                                 <TreeViewItem ItemsSource="{x:Bind local:MainWindow.IEnumerableToObservableCollection(ExtendedBy)}">
-                                    <TextBlock Text="{x:Bind DisplayName}" />
+                                    <TextBlock Text="{x:Bind ToString()}" />
                                 </TreeViewItem>
                             </DataTemplate>
                         </TreeView.ItemTemplate>
