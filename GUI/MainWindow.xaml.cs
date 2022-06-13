@@ -7,6 +7,8 @@ using System.Linq;
 using DotNetRdfExtensions.Models;
 using VDS.RDF;
 using DotNetRdfExtensions;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -82,10 +84,46 @@ namespace BOE.GUI
             Graph.Assert(organizationNode, dtdlDescription, Graph.CreateLiteralNode("En organisation av något slag (exempelvis företag, förening, projekt, konsortium, stam, etc.", "se"));
         }
 
-        private void OpenMenu_Click(object sender, RoutedEventArgs e)
+        private async void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Implement a window to select path
-            LoadedPath = "c:\\test\\test\\test";
+            FileOpenPicker filePicker = new FileOpenPicker();
+
+            // Get the current window's HWND by passing in the Window object
+            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+
+            // Associate the HWND with the file picker
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
+
+            // Use file picker like normal!
+            filePicker.FileTypeFilter.Add(".json");
+            StorageFile pickedFile = await filePicker.PickSingleFileAsync();
+
+            if (pickedFile != null)
+            {
+                // Application now has read/write access to the picked file
+                LoadedPath = pickedFile.Path;
+            }
+        }
+
+        private async void OpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            FolderPicker folderPicker = new FolderPicker();
+
+            // Get the current window's HWND by passing in the Window object
+            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+
+            // Associate the HWND with the file picker
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
+
+            // Use file picker like normal!
+            folderPicker.FileTypeFilter.Add("*");
+            StorageFolder pickedFolder = await folderPicker.PickSingleFolderAsync();
+
+            if (pickedFolder != null)
+            {
+                // Application now has read/write access to the picked file
+                LoadedPath = pickedFolder.Path;
+            }
         }
 
         private void InheritanceHierarchyView_InterfaceSelected(TreeView sender, TreeViewItemInvokedEventArgs args)

@@ -11,17 +11,9 @@
     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <MenuBar>
             <MenuBarItem Title="File">
-                <MenuFlyoutItem Text="New"/>
-                <MenuFlyoutItem Text="Open..." Click="OpenMenu_Click"/>
-                <MenuFlyoutItem Text="Save"/>
+                <MenuFlyoutItem Text="Open file..." Click="OpenFile_Click"/>
+                <MenuFlyoutItem Text="Open folder..." Click="OpenFolder_Click"/>
                 <MenuFlyoutItem Text="Exit"/>
-            </MenuBarItem>
-
-            <MenuBarItem Title="Edit">
-                <MenuFlyoutItem Text="Undo"/>
-                <MenuFlyoutItem Text="Cut"/>
-                <MenuFlyoutItem Text="Copy"/>
-                <MenuFlyoutItem Text="Paste"/>
             </MenuBarItem>
 
             <MenuBarItem Title="Help">
