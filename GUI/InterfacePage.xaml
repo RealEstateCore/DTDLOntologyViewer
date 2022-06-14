@@ -41,10 +41,22 @@
                     <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" />
 
                     <TextBlock FontWeight="Bold">Properties:</TextBlock>
-                    <ListView x:Name="PropertiesListView" Margin="0,0,0,10" />
+                    <ListView x:Name="PropertiesView" ItemsSource="{x:Bind PropertiesCollection}" Margin="0,0,0,10">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="dnreModels:DTDLProperty">
+                                <TextBlock Text="{x:Bind Name}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
 
                     <TextBlock FontWeight="Bold">Relationships:</TextBlock>
-                    <ListView x:Name="RelationshipsListView" Margin="0,0,0,10" />
+                    <ListView x:Name="RelationshipsView" ItemsSource="{x:Bind RelationshipsCollection}" Margin="0,0,0,10">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="dnreModels:DTDLRelationship">
+                                <TextBlock Text="{x:Bind Name}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </StackPanel>
 
             </TabViewItem>

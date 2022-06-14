@@ -1,4 +1,5 @@
-﻿using DotNetRdfExtensions.Models;
+﻿using DotNetRdfExtensions;
+using DotNetRdfExtensions.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.ObjectModel;
@@ -16,6 +17,8 @@ namespace BOE.GUI
     {
         ObservableCollection<ILiteralNode> DisplayNameCollection = new();
         ObservableCollection<ILiteralNode> DescriptionCollection = new();
+        ObservableCollection<DTDLProperty> PropertiesCollection = new();
+        ObservableCollection<DTDLRelationship> RelationshipsCollection = new();
         ObservableCollection<DTDLInterface> ExtendsCollection = new();
         private MainWindow MainWindow
         {
@@ -59,6 +62,18 @@ namespace BOE.GUI
                 foreach (ILiteralNode descriptionNode in SelectedInterface.Descriptions)
                 {
                     DescriptionCollection.Add(descriptionNode);
+                }
+
+                PropertiesCollection.Clear();
+                foreach (DTDLProperty property in SelectedInterface.Contents.Properties())
+                {
+                    PropertiesCollection.Add(property);
+                }
+
+                RelationshipsCollection.Clear();
+                foreach (DTDLRelationship relationship in SelectedInterface.Contents.Relationships())
+                {
+                    RelationshipsCollection.Add(relationship);
                 }
 
                 /*LocalizedString displayNameEnglish = new("En", "Agent");
