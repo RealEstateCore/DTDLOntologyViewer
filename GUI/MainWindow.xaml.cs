@@ -111,7 +111,8 @@ namespace BOE.GUI
 
             // Update inheritance tree view
             RootInterfaces.Clear();
-            IEnumerable<DTDLInterface> noParentInterfaces = Store.Graphs.First().GetDtdlInterfaces().Where(dtdlInterface => !dtdlInterface.Extends.Any());
+            IGraph graph = Store.Graphs.First();
+            IEnumerable<DTDLInterface> noParentInterfaces = graph.GetDtdlInterfaces().Where(iface => !iface.Extends.Any(parentIface => graph.ContainsDtdlInterface(parentIface)));
             foreach (DTDLInterface dtdlInterface in noParentInterfaces)
             {
                 RootInterfaces.Add(dtdlInterface);
