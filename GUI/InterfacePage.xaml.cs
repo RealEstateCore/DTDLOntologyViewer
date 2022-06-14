@@ -31,7 +31,11 @@ namespace BOE.GUI
             set
             {
                 _selectedInterface = value;
-                PopulateFields();
+                ClearFields();
+                if (_selectedInterface != null)
+                {
+                    PopulateFields();
+                }
             }
         }
 
@@ -40,52 +44,46 @@ namespace BOE.GUI
             this.InitializeComponent();
         }
 
+        private void ClearFields()
+        {
+            DtmiTextBlock.Text = string.Empty;
+            ExtendsCollection.Clear();
+            DisplayNameCollection.Clear();
+            DescriptionCollection.Clear();
+            PropertiesCollection.Clear();
+            RelationshipsCollection.Clear();
+        }
+
         private void PopulateFields()
         {
             if (SelectedInterface != null)
             {
                 DtmiTextBlock.Text = SelectedInterface.Dtmi;
 
-                ExtendsCollection.Clear();
                 foreach(DTDLInterface iface in SelectedInterface.Extends)
                 {
                     ExtendsCollection.Add(iface);
                 }
 
-                DisplayNameCollection.Clear();
                 foreach(ILiteralNode displayNameNode in SelectedInterface.DisplayNames)
                 {
                     DisplayNameCollection.Add(displayNameNode);
                 }
 
-                DescriptionCollection.Clear();
                 foreach (ILiteralNode descriptionNode in SelectedInterface.Descriptions)
                 {
                     DescriptionCollection.Add(descriptionNode);
                 }
 
-                PropertiesCollection.Clear();
                 foreach (DTDLProperty property in SelectedInterface.Contents.Properties())
                 {
                     PropertiesCollection.Add(property);
                 }
 
-                RelationshipsCollection.Clear();
                 foreach (DTDLRelationship relationship in SelectedInterface.Contents.Relationships())
                 {
                     RelationshipsCollection.Add(relationship);
                 }
-
-                /*LocalizedString displayNameEnglish = new("En", "Agent");
-                LocalizedString displayNameItalian = new("It", "Agento");
-                DisplayNameCollection.Add(displayNameEnglish);
-                DisplayNameCollection.Add(displayNameItalian);
-
-                DescriptionCollection.Clear();
-                LocalizedString descriptionEnglish = new("En", "An organization of any sort(e.g., a business, association, project, consortium, tribe, etc.)");
-                LocalizedString descriptionSwedish = new("Se", "En organisation av något slag (exempelvis företag, förening, projekt, konsortium, stam, etc.)");
-                DescriptionCollection.Add(descriptionEnglish);
-                DescriptionCollection.Add(descriptionSwedish);*/
             }
         }
     }

@@ -115,6 +115,9 @@ namespace BOE.GUI
             {
                 RootInterfaces.Add(dtdlInterface);
             }
+
+            // Clear currently selected interface
+            InterfacePage.SelectedInterface = null;
         }
 
         private async void OpenFile_Click(object sender, RoutedEventArgs e)
