@@ -9,6 +9,12 @@ using VDS.RDF;
 using DotNetRdfExtensions;
 using Windows.Storage.Pickers;
 using Windows.Storage;
+using System.IO;
+using VDS.RDF.Parsing;
+using VDS.RDF.JsonLd;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Reflection;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -60,9 +66,53 @@ namespace BOE.GUI
             return new ObservableCollection<object>(members);
         }
 
+        private static RemoteDocument LoadDtdl(Uri remoteRef, JsonLdLoaderOptions loaderOptions)
+        {
+            if (remoteRef.AbsoluteUri.Equals(DTDL.dtdlContext))
+            {
+                string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
+                JObject context;
+                using (StreamReader file = File.OpenText($"{directoryName}\\DTDL.v2.context.json"))
+                using (JsonTextReader reader = new JsonTextReader(file))
+                {
+                    context = (JObject)JToken.ReadFrom(reader);
+                }
+
+                return new RemoteDocument() { DocumentUrl = remoteRef, ContextUrl = remoteRef, Document = context };
+            }
+            else
+            {
+                return DefaultDocumentLoader.LoadJson(remoteRef, loaderOptions);
+            }
+        }
+
         private void ParsePath(string path)
         {
             // TODO: Implement loading from single file or directory of files
+            IEnumerable<FileInfo> sourceFiles;
+            if (File.GetAttributes(path) == System.IO.FileAttributes.Directory)
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                sourceFiles = directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories);
+            }
+            else
+            {
+                FileInfo singleSourceFile = new FileInfo(path);
+                sourceFiles = new [] { singleSourceFile };
+            }
+
+            JsonLdProcessorOptions options = new JsonLdProcessorOptions();
+            options.DocumentLoader = LoadDtdl;
+            //options.RemoteContextLimit = 0;
+            JsonLdParser parser = new JsonLdParser(options);
+            //options.DocumentLoader = Func<Uri remoteRef, JsonLdLoaderOptions loaderOptions>
+            /*JsonLdParser parser = new JsonLdParser();*/
+            ITripleStore store = new TripleStore();
+            foreach (FileInfo file in sourceFiles)
+            {
+                parser.Load(store, file.FullName);
+            }
+
 
             // Fake data
             IUriNode agentNode = Graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Agent;1"));

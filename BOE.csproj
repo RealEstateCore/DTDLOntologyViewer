@@ -43,6 +43,11 @@
     <ProjectReference Include="..\DotNetRdfExtensions\DotNetRdfExtensions.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="DTDL.v2.context.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="GUI\InterfacePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
