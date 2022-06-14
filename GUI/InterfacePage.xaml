@@ -12,7 +12,7 @@
     <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
         <TextBlock Margin="10,10,10,5"
                                HorizontalAlignment="Stretch" 
-                               FontWeight="Bold" x:Name="FormHeader"></TextBlock>
+                               FontWeight="Bold" x:Name="FormHeader">Interface: </TextBlock>
         <TabView VerticalAlignment="Stretch">
             <TabViewItem Header="Form view">
                 <StackPanel Orientation="Vertical" Padding="10">
