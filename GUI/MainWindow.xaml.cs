@@ -26,7 +26,8 @@ namespace BOE.GUI
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public IGraph Graph { get; }
+        public ITripleStore Store { get; }
+        
         public ObservableCollection<DTDLInterface> RootInterfaces { get; }
 
         private string? _loadedPath;
@@ -37,8 +38,7 @@ namespace BOE.GUI
             {
                 if (value != null)
                 {
-                    ParsePath(value);
-                    DrawInheritanceTree();
+                    LoadPath(value);
                     _loadedPath = value;
                 }
             }
@@ -47,29 +47,24 @@ namespace BOE.GUI
         public MainWindow()
         {
             this.InitializeComponent();
-            Graph = new Graph();
+            Store = new TripleStore();
             RootInterfaces = new ObservableCollection<DTDLInterface>();
         }
 
-        private void DrawInheritanceTree()
-        {
-            RootInterfaces.Clear();
-            IEnumerable<DTDLInterface> noParentInterfaces = Graph.GetDtdlInterfaces().Where(dtdlInterface => !dtdlInterface.Extends.Any());
-            foreach (DTDLInterface dtdlInterface in noParentInterfaces)
-            {
-                RootInterfaces.Add(dtdlInterface);
-            }
-        }
-
+        // Used to translate IEnumerable<DTDLInterface> from DTDLInterface.extendedBy property to a collection 
+        // that TreeView can ingest.
         public static ObservableCollection<object> IEnumerableToObservableCollection(IEnumerable<object> members)
         {
             return new ObservableCollection<object>(members);
         }
 
+        // The built in document loader in DotNetRDF cannot handle DTDL contexts, so this loader replaces it for DTDL 
+        // context, but defers to the built in document loader for all other URIs
         private static RemoteDocument LoadDtdl(Uri remoteRef, JsonLdLoaderOptions loaderOptions)
         {
             if (remoteRef.AbsoluteUri.Equals(DTDL.dtdlContext))
             {
+                // TODO: Clean this up for packaging; can DTDL context be included as built-in resource?
                 string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
                 JObject context;
                 using (StreamReader file = File.OpenText($"{directoryName}\\DTDL.v2.context.json"))
@@ -77,7 +72,6 @@ namespace BOE.GUI
                 {
                     context = (JObject)JToken.ReadFrom(reader);
                 }
-
                 return new RemoteDocument() { DocumentUrl = remoteRef, ContextUrl = remoteRef, Document = context };
             }
             else
@@ -86,14 +80,15 @@ namespace BOE.GUI
             }
         }
 
-        private void ParsePath(string path)
+        // Load a file or a directory of files from disk into the store; then update inheritance tree view
+        private void LoadPath(string path)
         {
-            // TODO: Implement loading from single file or directory of files
+            // Get selected file or, if directory selected, all JSON files in selected dir
             IEnumerable<FileInfo> sourceFiles;
             if (File.GetAttributes(path) == System.IO.FileAttributes.Directory)
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                sourceFiles = directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories);
+                sourceFiles = directoryInfo.EnumerateFiles("*.json", SearchOption.AllDirectories);
             }
             else
             {
@@ -101,37 +96,25 @@ namespace BOE.GUI
                 sourceFiles = new [] { singleSourceFile };
             }
 
+            // Parse and load those JSON files into (cleared) store
+            // Note use of DTDL-specific document loader, see LoadDtdl comment
+            List<Uri> loadedGraphs = Store.Graphs.GraphUris.ToList();
+            foreach (Uri loadedGraph in loadedGraphs) { Store.Remove(loadedGraph); }
             JsonLdProcessorOptions options = new JsonLdProcessorOptions();
             options.DocumentLoader = LoadDtdl;
-            //options.RemoteContextLimit = 0;
             JsonLdParser parser = new JsonLdParser(options);
-            //options.DocumentLoader = Func<Uri remoteRef, JsonLdLoaderOptions loaderOptions>
-            /*JsonLdParser parser = new JsonLdParser();*/
-            ITripleStore store = new TripleStore();
             foreach (FileInfo file in sourceFiles)
             {
-                parser.Load(store, file.FullName);
+                parser.Load(Store, file.FullName);
             }
 
-
-            // Fake data
-            IUriNode agentNode = Graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Agent;1"));
-            IUriNode personNode = Graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Person;1"));
-            IUriNode organizationNode = Graph.CreateUriNode(new Uri("dtmi:digitaltwins:rec_3_3:agents:Organization;1"));
-            IUriNode RDF_type = Graph.CreateUriNode(RDF.type);
-            IUriNode DTDL_Interface = Graph.CreateUriNode(DTDL.Interface);
-            IUriNode dtdlDescription = Graph.CreateUriNode(DTDL.description);
-            IUriNode dtdlDisplayName = Graph.CreateUriNode(DTDL.displayName);
-            IUriNode dtdlExtends = Graph.CreateUriNode(DTDL.extends);
-            Graph.Assert(agentNode, RDF_type, DTDL_Interface);
-            Graph.Assert(personNode, RDF_type, DTDL_Interface);
-            Graph.Assert(organizationNode, RDF_type, DTDL_Interface);
-            Graph.Assert(organizationNode, dtdlDisplayName, Graph.CreateLiteralNode("Organization", "en"));
-            Graph.Assert(organizationNode, dtdlDisplayName, Graph.CreateLiteralNode("Organisation", "se"));
-            Graph.Assert(personNode, dtdlExtends, agentNode);
-            Graph.Assert(organizationNode, dtdlExtends, agentNode);
-            Graph.Assert(organizationNode, dtdlDescription, Graph.CreateLiteralNode("An organization of any sort(e.g., a business, association, project, consortium, tribe, etc.)", "en"));
-            Graph.Assert(organizationNode, dtdlDescription, Graph.CreateLiteralNode("En organisation av något slag (exempelvis företag, förening, projekt, konsortium, stam, etc.", "se"));
+            // Update inheritance tree view
+            RootInterfaces.Clear();
+            IEnumerable<DTDLInterface> noParentInterfaces = Store.Graphs.First().GetDtdlInterfaces().Where(dtdlInterface => !dtdlInterface.Extends.Any());
+            foreach (DTDLInterface dtdlInterface in noParentInterfaces)
+            {
+                RootInterfaces.Add(dtdlInterface);
+            }
         }
 
         private async void OpenFile_Click(object sender, RoutedEventArgs e)
