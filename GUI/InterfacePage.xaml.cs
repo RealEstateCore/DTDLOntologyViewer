@@ -46,6 +46,7 @@ namespace BOE.GUI
 
         private void ClearFields()
         {
+            FormHeader.Text = "Interface: ";
             DtmiTextBlock.Text = string.Empty;
             ExtendsCollection.Clear();
             DisplayNameCollection.Clear();
@@ -58,6 +59,7 @@ namespace BOE.GUI
         {
             if (SelectedInterface != null)
             {
+                FormHeader.Text = $"Interface: {SelectedInterface}";
                 DtmiTextBlock.Text = SelectedInterface.Dtmi;
 
                 foreach(DTDLInterface iface in SelectedInterface.Extends)
