@@ -6,10 +6,11 @@
     xmlns:dnreModels="using:DotNetRdfExtensions.Models"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <MenuBar>
+    <controls:DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <MenuBar controls:DockPanel.Dock="Top">
             <MenuBarItem Title="File">
                 <MenuFlyoutItem Text="Open file..." Click="OpenFile_Click"/>
                 <MenuFlyoutItem Text="Open folder..." Click="OpenFolder_Click"/>
@@ -40,9 +41,7 @@
                     </TreeView>
                 </StackPanel>
             </SplitView.Pane>
-
             <local:InterfacePage x:Name="InterfacePage" />
         </SplitView>
-    </StackPanel>
-
+    </controls:DockPanel>
 </Window>
