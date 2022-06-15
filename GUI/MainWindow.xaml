@@ -10,6 +10,7 @@
     mc:Ignorable="d">
 
     <controls:DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        
         <MenuBar controls:DockPanel.Dock="Top">
             <MenuBarItem Title="File">
                 <MenuFlyoutItem Text="Open file..." Click="OpenFile_Click"/>
@@ -26,11 +27,9 @@
                    VerticalAlignment="Stretch"
                    HorizontalAlignment="Stretch">
             <SplitView.Pane>
-                <StackPanel Orientation="Vertical" Padding="5" VerticalAlignment="Stretch">
-                    <TextBlock Margin="5" 
-                               HorizontalAlignment="Stretch" 
-                               FontWeight="Bold">Interface Hierarchy</TextBlock>
-                    <TreeView x:Name="InheritanceHierarchyView" VerticalAlignment="Stretch" SelectionMode="Single" CanReorderItems="False" CanDrag="False" CanDragItems="False" ItemsSource="{x:Bind RootInterfaces}" ItemInvoked="InheritanceHierarchyView_InterfaceSelected">
+                <controls:DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <TextBlock Margin="5" controls:DockPanel.Dock="Top" FontWeight="Bold">Interface Hierarchy</TextBlock>
+                    <TreeView x:Name="InheritanceHierarchyView" ScrollViewer.VerticalScrollMode="Auto" VerticalAlignment="Stretch" SelectionMode="Single" CanReorderItems="False" CanDrag="False" CanDragItems="False" ItemsSource="{x:Bind RootInterfaces}" ItemInvoked="InheritanceHierarchyView_InterfaceSelected">
                         <TreeView.ItemTemplate>
                             <DataTemplate x:DataType="dnreModels:DTDLInterface">
                                 <TreeViewItem ItemsSource="{x:Bind local:MainWindow.IEnumerableToObservableCollection(ExtendedBy)}">
@@ -39,7 +38,7 @@
                             </DataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
-                </StackPanel>
+                </controls:DockPanel>
             </SplitView.Pane>
             <local:InterfacePage x:Name="InterfacePage" />
         </SplitView>

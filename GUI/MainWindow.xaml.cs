@@ -54,9 +54,9 @@ namespace BOE.GUI
 
         // Used to translate IEnumerable<DTDLInterface> from DTDLInterface.extendedBy property to a collection 
         // that TreeView can ingest.
-        public static ObservableCollection<object> IEnumerableToObservableCollection(IEnumerable<object> members)
+        private static ObservableCollection<DTDLInterface> IEnumerableToObservableCollection(IEnumerable<DTDLInterface> members)
         {
-            return new ObservableCollection<object>(members);
+            return new ObservableCollection<DTDLInterface>(members);
         }
 
         // The built in document loader in DotNetRDF cannot handle DTDL contexts, so this loader replaces it for DTDL 

@@ -8,20 +8,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
-        <TextBlock Margin="10,10,10,5"
+    <controls:DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TextBlock Margin="10,10,10,5" controls:DockPanel.Dock="Top"
                                HorizontalAlignment="Stretch" 
-                               FontWeight="Bold" x:Name="FormHeader">Interface: </TextBlock>
+                               FontWeight="Bold" x:Name="FormHeader">Interface:</TextBlock>
         <TabView VerticalAlignment="Stretch">
             <TabViewItem Header="Form view">
-                <StackPanel Orientation="Vertical" Padding="10">
+                <StackPanel Orientation="Vertical" Padding="10" HorizontalAlignment="Left">
                     <StackPanel.Resources>
                         <DataTemplate x:Key="LocalizedStringListViewTemplate" x:DataType="dnr:ILiteralNode">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{x:Bind Language}" FontWeight="Bold" />
                                 <TextBlock Text=":" FontWeight="Bold" Margin="0,0,5,0" />
-                                <TextBlock Text="{x:Bind Value}"/>
+                                <TextBlock Text="{x:Bind Value}" MaxWidth="800" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DataTemplate>
                         <DataTemplate x:Key="DTMIInterfaceListViewTemplate" x:DataType="dnreModels:DTDLInterface">
@@ -66,5 +67,8 @@
                 </TextBlock>
             </TabViewItem>
         </TabView>
-    </StackPanel>
+    </controls:DockPanel>
+
+        
+
 </Page>
