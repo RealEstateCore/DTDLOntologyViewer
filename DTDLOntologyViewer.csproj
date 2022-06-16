@@ -41,9 +41,6 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DotNetRdfExtensions\DotNetRdfExtensions.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="DTDL.v2.context.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using DotNetRdfExtensions.Models;
+using DTDLOntologyViewer.DotNetRdfExtensions.Models;
 using VDS.RDF;
-using DotNetRdfExtensions;
+using DTDLOntologyViewer.DotNetRdfExtensions;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using System.IO;
@@ -19,7 +19,7 @@ using System.Reflection;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace BOE.GUI
+namespace DTDLOntologyViewer.GUI
 {
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
