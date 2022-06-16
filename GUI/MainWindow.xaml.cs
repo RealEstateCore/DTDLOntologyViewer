@@ -47,7 +47,7 @@ namespace BOE.GUI
         public MainWindow()
         {
             this.InitializeComponent();
-            this.Title = "DTDL Overview Tool";
+            this.Title = "DTDL Ontology Viewer";
             Store = new TripleStore();
             RootInterfaces = new ObservableCollection<DTDLInterface>();
         }

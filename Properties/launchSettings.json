@@ -1,9 +1,14 @@
 {
   "profiles": {
-    "BOE (Package)": {
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
+    },
+    "DTDLOntologyViewer (Package)": {
       "commandName": "MsixPackage"
     },
-    "BOE (Unpackaged)": {
+    "DTDLOntologyViewer (Unpackaged)": {
       "commandName": "Project"
     }
   }
