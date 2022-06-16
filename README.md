@@ -1,1 +1,1 @@
-# BOE
+# DTDL Ontology Viewer

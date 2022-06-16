@@ -1,10 +1,5 @@
 {
   "profiles": {
-    "WSL": {
-      "commandName": "WSL2",
-      "environmentVariables": {},
-      "distributionName": ""
-    },
     "DTDLOntologyViewer (Package)": {
       "commandName": "MsixPackage"
     },
