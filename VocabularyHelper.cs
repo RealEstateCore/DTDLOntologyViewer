@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTDLOntologyViewer.DotNetRdfExtensions
+namespace DTDLOntologyViewer
 {
     public static class RDF
     {

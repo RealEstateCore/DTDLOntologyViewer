@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DTDLOntologyViewer.GUI"
-    xmlns:dnreModels="using:DTDLOntologyViewer.DotNetRdfExtensions.Models"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
@@ -31,9 +30,9 @@
                     <TextBlock Margin="5" controls:DockPanel.Dock="Top" FontWeight="Bold">Interface Hierarchy</TextBlock>
                     <TreeView x:Name="InheritanceHierarchyView" ScrollViewer.VerticalScrollMode="Auto" VerticalAlignment="Stretch" SelectionMode="Single" CanReorderItems="False" CanDrag="False" CanDragItems="False" ItemsSource="{x:Bind RootInterfaces}" ItemInvoked="InheritanceHierarchyView_InterfaceSelected">
                         <TreeView.ItemTemplate>
-                            <DataTemplate x:DataType="dnreModels:DTDLInterface">
-                                <TreeViewItem ItemsSource="{x:Bind local:MainWindow.IEnumerableToObservableCollection(ExtendedBy)}">
-                                    <TextBlock Text="{x:Bind ToString()}" />
+                            <DataTemplate x:Name="InheritanceHierarchyDataTemplate" x:DataType="local:DTInterfaceWrapper">
+                                <TreeViewItem ItemsSource="{x:Bind Children}">
+                                    <TextBlock Text="{x:Bind local:MainWindow.Label(WrappedInterface)}" />
                                 </TreeViewItem>
                             </DataTemplate>
                         </TreeView.ItemTemplate>

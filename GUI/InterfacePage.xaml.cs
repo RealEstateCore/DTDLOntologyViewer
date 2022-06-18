@@ -1,9 +1,7 @@
-﻿using DTDLOntologyViewer.DotNetRdfExtensions;
-using DTDLOntologyViewer.DotNetRdfExtensions.Models;
+﻿using Microsoft.Azure.DigitalTwins.Parser.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.ObjectModel;
-using VDS.RDF;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -15,17 +13,17 @@ namespace DTDLOntologyViewer.GUI
     /// </summary>
     public sealed partial class InterfacePage : Page
     {
-        ObservableCollection<ILiteralNode> DisplayNameCollection = new();
-        ObservableCollection<ILiteralNode> DescriptionCollection = new();
-        ObservableCollection<DTDLProperty> PropertiesCollection = new();
-        ObservableCollection<DTDLRelationship> RelationshipsCollection = new();
-        ObservableCollection<DTDLInterface> ExtendsCollection = new();
+        ObservableCollection<LocalizedString> DisplayNameCollection = new();
+        ObservableCollection<LocalizedString> DescriptionCollection = new();
+        ObservableCollection<DTPropertyInfo> PropertiesCollection = new();
+        ObservableCollection<DTRelationshipInfo> RelationshipsCollection = new();
+        ObservableCollection<DTInterfaceInfo> ExtendsCollection = new();
         private MainWindow MainWindow
         {
             get => (Application.Current as App)!.Window!;
         }
-        private DTDLInterface? _selectedInterface;
-        public DTDLInterface? SelectedInterface
+        private DTInterfaceInfo? _selectedInterface;
+        public DTInterfaceInfo? SelectedInterface
         {
             get => _selectedInterface;
             set
@@ -60,33 +58,35 @@ namespace DTDLOntologyViewer.GUI
             if (SelectedInterface != null)
             {
                 FormHeader.Text = $"Interface: {SelectedInterface}";
-                DtmiTextBlock.Text = SelectedInterface.Dtmi;
+                DtmiTextBlock.Text = SelectedInterface.Id.AbsoluteUri;
 
-                foreach(DTDLInterface iface in SelectedInterface.Extends)
+                foreach(DTInterfaceInfo iface in SelectedInterface.Extends)
                 {
                     ExtendsCollection.Add(iface);
                 }
 
-                foreach(ILiteralNode displayNameNode in SelectedInterface.DisplayNames)
+                foreach(var displayName in SelectedInterface.DisplayName)
                 {
-                    DisplayNameCollection.Add(displayNameNode);
+                    DisplayNameCollection.Add(new LocalizedString(displayName.Key, displayName.Value));
                 }
 
-                foreach (ILiteralNode descriptionNode in SelectedInterface.Descriptions)
+                foreach (var description in SelectedInterface.Description)
                 {
-                    DescriptionCollection.Add(descriptionNode);
+                    DescriptionCollection.Add(new LocalizedString(description.Key, description.Value));
                 }
 
-                foreach (DTDLProperty property in SelectedInterface.Contents.Properties())
+                foreach (DTPropertyInfo property in SelectedInterface.Properties())
                 {
                     PropertiesCollection.Add(property);
                 }
 
-                foreach (DTDLRelationship relationship in SelectedInterface.Contents.Relationships())
+                foreach (DTRelationshipInfo relationship in SelectedInterface.Relationships())
                 {
                     RelationshipsCollection.Add(relationship);
                 }
             }
         }
     }
+
+    public record LocalizedString(string Language, string Value);
 }

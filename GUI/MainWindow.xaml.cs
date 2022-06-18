@@ -4,17 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using DTDLOntologyViewer.DotNetRdfExtensions.Models;
-using VDS.RDF;
-using DTDLOntologyViewer.DotNetRdfExtensions;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using System.IO;
-using VDS.RDF.Parsing;
-using VDS.RDF.JsonLd;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System.Reflection;
+using Microsoft.Azure.DigitalTwins.Parser;
+using Microsoft.Azure.DigitalTwins.Parser.Models;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,10 +21,9 @@ namespace DTDLOntologyViewer.GUI
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public ITripleStore Store { get; }
         
-        public ObservableCollection<DTDLInterface> RootInterfaces { get; }
-
+        public ObservableCollection<DTInterfaceWrapper> RootInterfaces { get; }
+        public IReadOnlyDictionary<Dtmi, DTEntityInfo> DTEntities;
         private string? _loadedPath;
         public string? LoadedPath
         {
@@ -48,41 +42,34 @@ namespace DTDLOntologyViewer.GUI
         {
             this.InitializeComponent();
             this.Title = "DTDL Ontology Viewer";
-            Store = new TripleStore();
-            RootInterfaces = new ObservableCollection<DTDLInterface>();
+            RootInterfaces = new ObservableCollection<DTInterfaceWrapper>();
+            DTEntities = new ReadOnlyDictionary<Dtmi, DTEntityInfo>(new Dictionary<Dtmi, DTEntityInfo>());
+        }
+
+        public static string Label(DTInterfaceInfo dtInterface)
+        {
+            IReadOnlyDictionary<string,string> displayNames = dtInterface.DisplayName;
+            if (displayNames.ContainsKey("")) return displayNames[""];
+            if (displayNames.ContainsKey("en")) return displayNames["en"];
+            if (displayNames.Count > 0) return displayNames.First().Value;
+            return dtInterface.Id.Labels.Last();
         }
 
         // Used to translate IEnumerable<DTDLInterface> from DTDLInterface.extendedBy property to a collection 
         // that TreeView can ingest.
-        private static ObservableCollection<DTDLInterface> IEnumerableToObservableCollection(IEnumerable<DTDLInterface> members)
+        private static ObservableCollection<DTInterfaceInfo> IEnumerableToObservableCollection(IEnumerable<DTInterfaceInfo> members)
         {
-            return new ObservableCollection<DTDLInterface>(members);
+            return new ObservableCollection<DTInterfaceInfo>(members);
         }
 
-        // The built in document loader in DotNetRDF cannot handle DTDL contexts, so this loader replaces it for DTDL 
-        // context, but defers to the built in document loader for all other URIs
-        private static RemoteDocument LoadDtdl(Uri remoteRef, JsonLdLoaderOptions loaderOptions)
+        private IEnumerable<DTInterfaceInfo> ExtendedBy(DTInterfaceInfo parent)
         {
-            if (remoteRef.AbsoluteUri.Equals(DTDL.dtdlContext))
-            {
-                // TODO: Clean this up for packaging; can DTDL context be included as built-in resource?
-                string directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
-                JObject context;
-                using (StreamReader file = File.OpenText($"{directoryName}\\DTDL.v2.context.json"))
-                using (JsonTextReader reader = new JsonTextReader(file))
-                {
-                    context = (JObject)JToken.ReadFrom(reader);
-                }
-                return new RemoteDocument() { DocumentUrl = remoteRef, ContextUrl = remoteRef, Document = context };
-            }
-            else
-            {
-                return DefaultDocumentLoader.LoadJson(remoteRef, loaderOptions);
-            }
+            IEnumerable<DTInterfaceInfo> allInterfaces = DTEntities.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
+            return allInterfaces.Where(iFace => iFace.Extends.Contains(parent));
         }
 
         // Load a file or a directory of files from disk into the store; then update inheritance tree view
-        private void LoadPath(string path)
+        private async void LoadPath(string path)
         {
             // Get selected file or, if directory selected, all JSON files in selected dir
             IEnumerable<FileInfo> sourceFiles;
@@ -97,25 +84,24 @@ namespace DTDLOntologyViewer.GUI
                 sourceFiles = new [] { singleSourceFile };
             }
 
-            // Parse and load those JSON files into (cleared) store
-            // Note use of DTDL-specific document loader, see LoadDtdl comment
-            List<Uri> loadedGraphs = Store.Graphs.GraphUris.ToList();
-            foreach (Uri loadedGraph in loadedGraphs) { Store.Remove(loadedGraph); }
-            JsonLdProcessorOptions options = new JsonLdProcessorOptions();
-            options.DocumentLoader = LoadDtdl;
-            JsonLdParser parser = new JsonLdParser(options);
+
+            List<string> modelJson = new List<string>();
             foreach (FileInfo file in sourceFiles)
             {
-                parser.Load(Store, file.FullName);
+                using StreamReader modelReader = new StreamReader(file.FullName);
+                modelJson.Add(modelReader.ReadToEnd());
             }
+            ModelParser modelParser = new ModelParser(0);
+            DTEntities = await modelParser.ParseAsync(modelJson);
 
             // Update inheritance tree view
             RootInterfaces.Clear();
-            IGraph graph = Store.Graphs.First();
-            IEnumerable<DTDLInterface> noParentInterfaces = graph.GetDtdlInterfaces().Where(iface => !iface.Extends.Any(parentIface => graph.ContainsDtdlInterface(parentIface)));
-            foreach (DTDLInterface dtdlInterface in noParentInterfaces)
+            
+            IEnumerable<DTInterfaceInfo> allInterfaces = DTEntities.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
+            IEnumerable<DTInterfaceInfo> noParentInterfaces = allInterfaces.Where(iface => !iface.Extends.Any(parentIface => allInterfaces.Contains(parentIface)));
+            foreach (DTInterfaceInfo dtdlInterface in noParentInterfaces)
             {
-                RootInterfaces.Add(dtdlInterface);
+                RootInterfaces.Add(new DTInterfaceWrapper(dtdlInterface, DTEntities));
             }
 
             // Clear currently selected interface
@@ -166,7 +152,26 @@ namespace DTDLOntologyViewer.GUI
 
         private void InheritanceHierarchyView_InterfaceSelected(TreeView sender, TreeViewItemInvokedEventArgs args)
         {
-            InterfacePage.SelectedInterface = (DTDLInterface)args.InvokedItem;
+            InterfacePage.SelectedInterface = ((DTInterfaceWrapper)args.InvokedItem).WrappedInterface;
+        }
+    }
+
+    public class DTInterfaceWrapper
+    {
+        public DTInterfaceInfo WrappedInterface { get; set; }
+        public IReadOnlyDictionary<Dtmi, DTEntityInfo> WrappedOntology { get; set; }
+        public IEnumerable<DTInterfaceWrapper> Children
+        {
+            get
+            {
+                IEnumerable<DTInterfaceInfo> allInterfaces = WrappedOntology.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
+                return allInterfaces.Where(childInterface => childInterface.Extends.Contains(WrappedInterface)).Select(childInterface => new DTInterfaceWrapper(childInterface, WrappedOntology));
+            }
+        }
+        public DTInterfaceWrapper(DTInterfaceInfo wrappedInterface, IReadOnlyDictionary<Dtmi, DTEntityInfo> wrappedOntology)
+        {
+            WrappedInterface = wrappedInterface;
+            WrappedOntology = wrappedOntology;
         }
     }
 }
