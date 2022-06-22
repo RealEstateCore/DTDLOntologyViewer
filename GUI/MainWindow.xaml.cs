@@ -92,20 +92,48 @@ namespace DTDLOntologyViewer.GUI
                 modelJson.Add(modelReader.ReadToEnd());
             }
             ModelParser modelParser = new ModelParser(0);
-            DTEntities = await modelParser.ParseAsync(modelJson);
 
-            // Update inheritance tree view
-            RootInterfaces.Clear();
-            
-            IEnumerable<DTInterfaceInfo> allInterfaces = DTEntities.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
-            IEnumerable<DTInterfaceInfo> noParentInterfaces = allInterfaces.Where(iface => !iface.Extends.Any(parentIface => allInterfaces.Contains(parentIface)));
-            foreach (DTInterfaceInfo dtdlInterface in noParentInterfaces)
-            {
-                RootInterfaces.Add(new DTInterfaceWrapper(dtdlInterface, DTEntities));
+            try { 
+                DTEntities = await modelParser.ParseAsync(modelJson);
+
+                // Update inheritance tree view
+                RootInterfaces.Clear();
+
+                IEnumerable<DTInterfaceInfo> allInterfaces = DTEntities.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
+                IEnumerable<DTInterfaceInfo> noParentInterfaces = allInterfaces.Where(iface => !iface.Extends.Any(parentIface => allInterfaces.Contains(parentIface)));
+                foreach (DTInterfaceInfo dtdlInterface in noParentInterfaces)
+                {
+                    RootInterfaces.Add(new DTInterfaceWrapper(dtdlInterface, DTEntities));
+                }
+
+                // Clear currently selected interface
+                InterfacePage.SelectedInterface = null;
             }
+            catch (ParsingException parserEx)
+            {
 
-            // Clear currently selected interface
-            InterfacePage.SelectedInterface = null;
+                ContentDialog errorDialog = new()
+                {
+                    XamlRoot = Content.XamlRoot,
+                    Title = $"DTDL Parser Error",
+                    CloseButtonText = "OK",
+                    DefaultButton = ContentDialogButton.Close,
+                    Content = new ScrollViewer() {
+                        Content = new TextBlock() {
+                            Text = parserEx.Message + "\n\n" + string.Join("\n\n", parserEx.Errors.Select(error => error.Message))
+                        },
+                        VerticalScrollMode = ScrollMode.Enabled,
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        HorizontalScrollMode = ScrollMode.Enabled,
+                        HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Stretch
+                    },
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                await errorDialog.ShowAsync();
+            }
         }
 
         private async void OpenFile_Click(object sender, RoutedEventArgs e)

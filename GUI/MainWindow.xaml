@@ -9,7 +9,6 @@
     mc:Ignorable="d">
 
     <controls:DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        
         <MenuBar controls:DockPanel.Dock="Top">
             <MenuBarItem Title="File">
                 <MenuFlyoutItem Text="Open file..." Click="OpenFile_Click"/>
