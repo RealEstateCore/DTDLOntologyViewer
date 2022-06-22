@@ -47,7 +47,11 @@
                             <ListView x:Name="DirectPropertiesView" ItemsSource="{x:Bind DirectPropertiesCollection}" Margin="0,0,0,10">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="models:DTPropertyInfo">
-                                        <TextBlock Text="{x:Bind Name}" />
+                                        <TextBlock>
+                                            <Run Text="{x:Bind Name}"/>
+                                            <Run> --> [</Run>
+                                            <Run Text="{x:Bind Schema}" />
+                                        </TextBlock>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
@@ -57,7 +61,11 @@
                             <ListView x:Name="InheritedPropertiesView" ItemsSource="{x:Bind InheritedPropertiesCollection}" Margin="0,0,0,10">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="models:DTPropertyInfo">
-                                        <TextBlock Text="{x:Bind Name}" />
+                                        <TextBlock>
+                                            <Run Text="{x:Bind Name}"/>
+                                            <Run> --> [</Run>
+                                            <Run Text="{x:Bind Schema}" />
+                                        </TextBlock>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
@@ -71,7 +79,15 @@
                             <ListView x:Name="DirectRelationshipsView" ItemsSource="{x:Bind DirectRelationshipsCollection}" Margin="0,0,0,10">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                        <TextBlock Text="{x:Bind Name}" />
+                                        <TextBlock>
+                                            <Run Text="{x:Bind Name}"/>
+                                            <Run> --> [</Run>
+                                            <Run Text="{x:Bind MinMultiplicity}" />
+                                            <Run>-</Run>
+                                            <Run Text="{x:Bind MaxMultiplicity}" />
+                                            <Run>] </Run>
+                                            <Run Text="{x:Bind Target}" />
+                                        </TextBlock>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
@@ -81,7 +97,15 @@
                             <ListView x:Name="InheritedRelationshipsView" ItemsSource="{x:Bind InheritedRelationshipsCollection}" Margin="0,0,0,10">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                        <TextBlock Text="{x:Bind Name}" />
+                                        <TextBlock>
+                                            <Run Text="{x:Bind Name}"/>
+                                            <Run> --> [</Run>
+                                            <Run Text="{x:Bind MinMultiplicity}" />
+                                            <Run>-</Run>
+                                            <Run Text="{x:Bind MaxMultiplicity}" />
+                                            <Run>] </Run>
+                                            <Run Text="{x:Bind Target}" />
+                                        </TextBlock>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
