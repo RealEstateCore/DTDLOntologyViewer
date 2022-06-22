@@ -15,103 +15,105 @@
                                FontWeight="Bold" x:Name="FormHeader">Interface:</TextBlock>
         <TabView VerticalAlignment="Stretch">
             <TabViewItem Header="Form view">
-                <StackPanel Orientation="Vertical" Padding="10" HorizontalAlignment="Left">
-                    <StackPanel.Resources>
-                        <DataTemplate x:Key="LocalizedStringListViewTemplate" x:DataType="local:LocalizedString">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Bind Language}" FontWeight="Bold" />
-                                <TextBlock Text=":" FontWeight="Bold" Margin="0,0,5,0" />
-                                <TextBlock Text="{x:Bind Value}" MaxWidth="800" TextWrapping="Wrap"/>
+                <ScrollViewer VerticalScrollMode="Auto">
+                    <StackPanel Orientation="Vertical" Padding="10" HorizontalAlignment="Left">
+                        <StackPanel.Resources>
+                            <DataTemplate x:Key="LocalizedStringListViewTemplate" x:DataType="local:LocalizedString">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{x:Bind Language}" FontWeight="Bold" />
+                                    <TextBlock Text=":" FontWeight="Bold" Margin="0,0,5,0" />
+                                    <TextBlock Text="{x:Bind Value}" MaxWidth="800" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DataTemplate>
+                            <DataTemplate x:Key="DTMIInterfaceListViewTemplate" x:DataType="models:DTInterfaceInfo">
+                                <TextBlock Text="{x:Bind Id.AbsoluteUri}" x:Phase="1" Margin="0,5,0,5"/>
+                            </DataTemplate>
+                        </StackPanel.Resources>
+                        <TextBlock FontWeight="Bold">DTMI:</TextBlock>
+                        <TextBlock x:Name="DtmiTextBlock" Margin="0,0,0,10"></TextBlock>
+
+                        <TextBlock FontWeight="Bold">Display Name:</TextBlock>
+                        <ListView x:Name="DisplayNameListView" ItemsSource="{x:Bind DisplayNameCollection}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" Margin="0,0,0,10" />
+
+                        <TextBlock FontWeight="Bold">Description:</TextBlock>
+                        <ListView x:Name="DescriptionListView" ItemsSource="{x:Bind DescriptionCollection}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" Margin="0,0,0,10" />
+
+                        <TextBlock FontWeight="Bold">Extends:</TextBlock>
+                        <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" />
+
+                        <TextBlock FontWeight="Bold">Properties:</TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock x:Name="DirectPropertiesHeader" TextDecorations="Underline">Direct</TextBlock>
+                                <ListView x:Name="DirectPropertiesView" ItemsSource="{x:Bind DirectPropertiesCollection}" Margin="0,0,0,10">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:DTPropertyInfo">
+                                            <TextBlock>
+                                                <Run Text="{x:Bind Name}"/>
+                                                <Run> --> [</Run>
+                                                <Run Text="{x:Bind Schema}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
                             </StackPanel>
-                        </DataTemplate>
-                        <DataTemplate x:Key="DTMIInterfaceListViewTemplate" x:DataType="models:DTInterfaceInfo">
-                            <TextBlock Text="{x:Bind Id.AbsoluteUri}" x:Phase="1" Margin="0,5,0,5"/>
-                        </DataTemplate>
-                    </StackPanel.Resources>
-                    <TextBlock FontWeight="Bold">DTMI:</TextBlock>
-                    <TextBlock x:Name="DtmiTextBlock" Margin="0,0,0,10"></TextBlock>
-
-                    <TextBlock FontWeight="Bold">Display Name:</TextBlock>
-                    <ListView x:Name="DisplayNameListView" ItemsSource="{x:Bind DisplayNameCollection}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" Margin="0,0,0,10" />
-
-                    <TextBlock FontWeight="Bold">Description:</TextBlock>
-                    <ListView x:Name="DescriptionListView" ItemsSource="{x:Bind DescriptionCollection}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" Margin="0,0,0,10" />
-
-                    <TextBlock FontWeight="Bold">Extends:</TextBlock>
-                    <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" />
-
-                    <TextBlock FontWeight="Bold">Properties:</TextBlock>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock x:Name="DirectPropertiesHeader" TextDecorations="Underline">Direct</TextBlock>
-                            <ListView x:Name="DirectPropertiesView" ItemsSource="{x:Bind DirectPropertiesCollection}" Margin="0,0,0,10">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:DTPropertyInfo">
-                                        <TextBlock>
-                                            <Run Text="{x:Bind Name}"/>
-                                            <Run> --> [</Run>
-                                            <Run Text="{x:Bind Schema}" />
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock x:Name="InheritedPropertiesHeader" TextDecorations="Underline">Inherited</TextBlock>
+                                <ListView x:Name="InheritedPropertiesView" ItemsSource="{x:Bind InheritedPropertiesCollection}" Margin="0,0,0,10">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:DTPropertyInfo">
+                                            <TextBlock>
+                                                <Run Text="{x:Bind Name}"/>
+                                                <Run> --> [</Run>
+                                                <Run Text="{x:Bind Schema}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
                         </StackPanel>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock x:Name="InheritedPropertiesHeader" TextDecorations="Underline">Inherited</TextBlock>
-                            <ListView x:Name="InheritedPropertiesView" ItemsSource="{x:Bind InheritedPropertiesCollection}" Margin="0,0,0,10">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:DTPropertyInfo">
-                                        <TextBlock>
-                                            <Run Text="{x:Bind Name}"/>
-                                            <Run> --> [</Run>
-                                            <Run Text="{x:Bind Schema}" />
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </StackPanel>
-                    </StackPanel>
 
-                    <TextBlock FontWeight="Bold">Relationships:</TextBlock>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock x:Name="DirectRelationshipsHeader" TextDecorations="Underline">Direct</TextBlock>
-                            <ListView x:Name="DirectRelationshipsView" ItemsSource="{x:Bind DirectRelationshipsCollection}" Margin="0,0,0,10">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                        <TextBlock>
-                                            <Run Text="{x:Bind Name}"/>
-                                            <Run> --> [</Run>
-                                            <Run Text="{x:Bind MinMultiplicity}" />
-                                            <Run>-</Run>
-                                            <Run Text="{x:Bind MaxMultiplicity}" />
-                                            <Run>] </Run>
-                                            <Run Text="{x:Bind Target}" />
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </StackPanel>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock x:Name="InheritedRelationshipsHeader" TextDecorations="Underline">Inherited</TextBlock>
-                            <ListView x:Name="InheritedRelationshipsView" ItemsSource="{x:Bind InheritedRelationshipsCollection}" Margin="0,0,0,10">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                        <TextBlock>
-                                            <Run Text="{x:Bind Name}"/>
-                                            <Run> --> [</Run>
-                                            <Run Text="{x:Bind MinMultiplicity}" />
-                                            <Run>-</Run>
-                                            <Run Text="{x:Bind MaxMultiplicity}" />
-                                            <Run>] </Run>
-                                            <Run Text="{x:Bind Target}" />
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
+                        <TextBlock FontWeight="Bold">Relationships:</TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock x:Name="DirectRelationshipsHeader" TextDecorations="Underline">Direct</TextBlock>
+                                <ListView x:Name="DirectRelationshipsView" ItemsSource="{x:Bind DirectRelationshipsCollection}" Margin="0,0,0,10">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                            <TextBlock>
+                                                <Run Text="{x:Bind Name}"/>
+                                                <Run> --> [</Run>
+                                                <Run Text="{x:Bind MinMultiplicity}" />
+                                                <Run>-</Run>
+                                                <Run Text="{x:Bind MaxMultiplicity}" />
+                                                <Run>] </Run>
+                                                <Run Text="{x:Bind Target}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock x:Name="InheritedRelationshipsHeader" TextDecorations="Underline">Inherited</TextBlock>
+                                <ListView x:Name="InheritedRelationshipsView" ItemsSource="{x:Bind InheritedRelationshipsCollection}" Margin="0,0,0,10">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                            <TextBlock>
+                                                <Run Text="{x:Bind Name}"/>
+                                                <Run> --> [</Run>
+                                                <Run Text="{x:Bind MinMultiplicity}" />
+                                                <Run>-</Run>
+                                                <Run Text="{x:Bind MaxMultiplicity}" />
+                                                <Run>] </Run>
+                                                <Run Text="{x:Bind Target}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </ScrollViewer>
 
             </TabViewItem>
             <TabViewItem Header="Visualization view">
