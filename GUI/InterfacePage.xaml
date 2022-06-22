@@ -41,22 +41,52 @@
                     <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" />
 
                     <TextBlock FontWeight="Bold">Properties:</TextBlock>
-                    <ListView x:Name="PropertiesView" ItemsSource="{x:Bind PropertiesCollection}" Margin="0,0,0,10">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:DTPropertyInfo">
-                                <TextBlock Text="{x:Bind Name}" />
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock x:Name="DirectPropertiesHeader" TextDecorations="Underline">Direct</TextBlock>
+                            <ListView x:Name="DirectPropertiesView" ItemsSource="{x:Bind DirectPropertiesCollection}" Margin="0,0,0,10">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:DTPropertyInfo">
+                                        <TextBlock Text="{x:Bind Name}" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock x:Name="InheritedPropertiesHeader" TextDecorations="Underline">Inherited</TextBlock>
+                            <ListView x:Name="InheritedPropertiesView" ItemsSource="{x:Bind InheritedPropertiesCollection}" Margin="0,0,0,10">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:DTPropertyInfo">
+                                        <TextBlock Text="{x:Bind Name}" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </StackPanel>
 
                     <TextBlock FontWeight="Bold">Relationships:</TextBlock>
-                    <ListView x:Name="RelationshipsView" ItemsSource="{x:Bind RelationshipsCollection}" Margin="0,0,0,10">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                <TextBlock Text="{x:Bind Name}" />
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock x:Name="DirectRelationshipsHeader" TextDecorations="Underline">Direct</TextBlock>
+                            <ListView x:Name="DirectRelationshipsView" ItemsSource="{x:Bind DirectRelationshipsCollection}" Margin="0,0,0,10">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                        <TextBlock Text="{x:Bind Name}" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock x:Name="InheritedRelationshipsHeader" TextDecorations="Underline">Inherited</TextBlock>
+                            <ListView x:Name="InheritedRelationshipsView" ItemsSource="{x:Bind InheritedRelationshipsCollection}" Margin="0,0,0,10">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                        <TextBlock Text="{x:Bind Name}" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
 
             </TabViewItem>

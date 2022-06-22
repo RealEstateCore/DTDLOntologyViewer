@@ -15,8 +15,10 @@ namespace DTDLOntologyViewer.GUI
     {
         ObservableCollection<LocalizedString> DisplayNameCollection = new();
         ObservableCollection<LocalizedString> DescriptionCollection = new();
-        ObservableCollection<DTPropertyInfo> PropertiesCollection = new();
-        ObservableCollection<DTRelationshipInfo> RelationshipsCollection = new();
+        ObservableCollection<DTPropertyInfo> DirectPropertiesCollection = new();
+        ObservableCollection<DTPropertyInfo> InheritedPropertiesCollection = new();
+        ObservableCollection<DTRelationshipInfo> DirectRelationshipsCollection = new();
+        ObservableCollection<DTRelationshipInfo> InheritedRelationshipsCollection = new();
         ObservableCollection<DTInterfaceInfo> ExtendsCollection = new();
         private MainWindow MainWindow
         {
@@ -49,8 +51,10 @@ namespace DTDLOntologyViewer.GUI
             ExtendsCollection.Clear();
             DisplayNameCollection.Clear();
             DescriptionCollection.Clear();
-            PropertiesCollection.Clear();
-            RelationshipsCollection.Clear();
+            DirectPropertiesCollection.Clear();
+            InheritedPropertiesCollection.Clear();
+            DirectRelationshipsCollection.Clear();
+            InheritedRelationshipsCollection.Clear();
         }
 
         private void PopulateFields()
@@ -75,15 +79,29 @@ namespace DTDLOntologyViewer.GUI
                     DescriptionCollection.Add(new LocalizedString(description.Key, description.Value));
                 }
 
-                foreach (DTPropertyInfo property in SelectedInterface.Properties())
+                foreach (DTPropertyInfo property in SelectedInterface.DirectProperties())
                 {
-                    PropertiesCollection.Add(property);
+                    DirectPropertiesCollection.Add(property);
                 }
+                DirectPropertiesHeader.Visibility = DirectPropertiesCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-                foreach (DTRelationshipInfo relationship in SelectedInterface.Relationships())
+                foreach (DTPropertyInfo property in SelectedInterface.InheritedProperties())
                 {
-                    RelationshipsCollection.Add(relationship);
+                    InheritedPropertiesCollection.Add(property);
                 }
+                InheritedPropertiesHeader.Visibility = InheritedPropertiesCollection.Count > 0 ? Visibility.Visible: Visibility.Collapsed;
+
+                foreach (DTRelationshipInfo relationship in SelectedInterface.DirectRelationships())
+                {
+                    DirectRelationshipsCollection.Add(relationship);
+                }
+                DirectRelationshipsHeader.Visibility = DirectRelationshipsCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+                foreach (DTRelationshipInfo relationship in SelectedInterface.InheritedRelationships())
+                {
+                    InheritedRelationshipsCollection.Add(relationship);
+                }
+                InheritedRelationshipsHeader.Visibility = InheritedRelationshipsCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }

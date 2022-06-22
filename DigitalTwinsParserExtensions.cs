@@ -6,14 +6,32 @@ namespace DTDLOntologyViewer
 {
     public static class DigitalTwinsParserExtensions
     {
-        public static IEnumerable<DTRelationshipInfo> Relationships(this DTInterfaceInfo iface)
+        public static IEnumerable<DTRelationshipInfo> InheritedRelationships(this DTInterfaceInfo iface)
         {
-            return iface.Contents.Values.Where(content => content is DTRelationshipInfo).Select(content => (DTRelationshipInfo)content);
+            return iface.Contents.Values
+                .Where(content => content is DTRelationshipInfo && content.DefinedIn != iface.Id)
+                .Select(content => (DTRelationshipInfo)content);
         }
 
-        public static IEnumerable<DTPropertyInfo> Properties(this DTInterfaceInfo iface)
+        public static IEnumerable<DTRelationshipInfo> DirectRelationships(this DTInterfaceInfo iface)
         {
-            return iface.Contents.Values.Where(content => content is DTPropertyInfo).Select(content => (DTPropertyInfo)content);
+            return iface.Contents.Values
+                .Where(content => content is DTRelationshipInfo && content.DefinedIn == iface.Id)
+                .Select(content => (DTRelationshipInfo)content);
+        }
+
+        public static IEnumerable<DTPropertyInfo> InheritedProperties(this DTInterfaceInfo iface)
+        {
+            return iface.Contents.Values
+                .Where(content => content is DTPropertyInfo && content.DefinedIn != iface.Id)
+                .Select(content => (DTPropertyInfo)content);
+        }
+
+        public static IEnumerable<DTPropertyInfo> DirectProperties(this DTInterfaceInfo iface)
+        {
+            return iface.Contents.Values
+                .Where(content => content is DTPropertyInfo && content.DefinedIn == iface.Id)
+                .Select(content => (DTPropertyInfo)content);
         }
     }
 }
