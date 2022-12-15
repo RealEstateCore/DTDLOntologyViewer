@@ -61,7 +61,7 @@ namespace DTDLOntologyViewer.GUI
         {
             if (SelectedInterface != null)
             {
-                FormHeader.Text = $"Interface: {SelectedInterface}";
+                FormHeader.Text = $"Interface: {SelectedInterface.Id}";
                 DtmiTextBlock.Text = SelectedInterface.Id.AbsoluteUri;
 
                 foreach(DTInterfaceInfo iface in SelectedInterface.Extends)
