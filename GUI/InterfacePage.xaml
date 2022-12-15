@@ -12,9 +12,9 @@
     <controls:DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <TextBlock Margin="10,10,10,5" controls:DockPanel.Dock="Top"
                                HorizontalAlignment="Stretch" 
-                               FontWeight="Bold" x:Name="FormHeader">Interface:</TextBlock>
-        <TabView VerticalAlignment="Stretch">
-            <TabViewItem Header="Form view">
+                               FontWeight="Bold" x:Name="FormHeader"></TextBlock>
+        <TabView VerticalAlignment="Stretch" IsAddTabButtonVisible="False">
+            <TabViewItem Header="Form view" IsClosable="False">
                 <ScrollViewer VerticalScrollMode="Auto">
                     <StackPanel Orientation="Vertical" Padding="10" HorizontalAlignment="Left">
                         <StackPanel.Resources>
@@ -116,7 +116,7 @@
                 </ScrollViewer>
 
             </TabViewItem>
-            <TabViewItem Header="Visualization view">
+            <TabViewItem Header="Visualization view" IsClosable="False">
                 <TextBlock Margin="10">
                             Visualization view goes here.
                 </TextBlock>

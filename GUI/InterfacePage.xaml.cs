@@ -46,7 +46,7 @@ namespace DTDLOntologyViewer.GUI
 
         private void ClearFields()
         {
-            FormHeader.Text = "Interface: ";
+            FormHeader.Text = "";
             DtmiTextBlock.Text = string.Empty;
             ExtendsCollection.Clear();
             DisplayNameCollection.Clear();
@@ -61,7 +61,7 @@ namespace DTDLOntologyViewer.GUI
         {
             if (SelectedInterface != null)
             {
-                FormHeader.Text = $"Interface: {SelectedInterface.Id}";
+                FormHeader.Text = $"{MainWindow.Label(SelectedInterface)}";
                 DtmiTextBlock.Text = SelectedInterface.Id.AbsoluteUri;
 
                 foreach(DTInterfaceInfo iface in SelectedInterface.Extends)
