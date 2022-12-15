@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.DigitalTwins.Parser.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.ObjectModel;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -35,6 +36,7 @@ namespace DTDLOntologyViewer.GUI
                 if (_selectedInterface != null)
                 {
                     PopulateFields();
+                    MainWindow.ChangeInheritanceTreeSelection(_selectedInterface);
                 }
             }
         }
@@ -102,6 +104,15 @@ namespace DTDLOntologyViewer.GUI
                     InheritedRelationshipsCollection.Add(relationship);
                 }
                 InheritedRelationshipsHeader.Visibility = InheritedRelationshipsCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private void ExtendsListView_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (e.OriginalSource is TextBlock && ((TextBlock)e.OriginalSource).DataContext is DTInterfaceInfo)
+            {
+                DTInterfaceInfo iface = (DTInterfaceInfo)((TextBlock)e.OriginalSource).DataContext;
+                SelectedInterface = iface;
             }
         }
     }

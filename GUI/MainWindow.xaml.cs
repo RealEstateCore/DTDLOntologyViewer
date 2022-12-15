@@ -178,9 +178,23 @@ namespace DTDLOntologyViewer.GUI
             }
         }
 
+        public void ChangeInheritanceTreeSelection(DTInterfaceInfo iface)
+        {
+            TreeViewNode? targetNode = InheritanceHierarchyView.RootNodes.SelectMany(rootNode => GetTransitiveChildren(rootNode)).FirstOrDefault(node => ((DTInterfaceWrapper)node.Content).WrappedInterface.Id == iface.Id);
+            if (targetNode != null)
+            {
+                InheritanceHierarchyView.SelectedNode = targetNode;
+            }
+        }
+
         private void InheritanceHierarchyView_InterfaceSelected(TreeView sender, TreeViewItemInvokedEventArgs args)
         {
             InterfacePage.SelectedInterface = ((DTInterfaceWrapper)args.InvokedItem).WrappedInterface;
+        }
+
+        private IEnumerable<TreeViewNode> GetTransitiveChildren(TreeViewNode inputNode)
+        {
+            return inputNode.Children.Prepend(inputNode).Concat(inputNode.Children.SelectMany(child => GetTransitiveChildren(child)));
         }
     }
 

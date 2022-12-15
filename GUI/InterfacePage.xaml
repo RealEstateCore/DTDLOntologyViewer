@@ -39,7 +39,7 @@
                         <ListView x:Name="DescriptionListView" ItemsSource="{x:Bind DescriptionCollection}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" Margin="0,0,0,10" />
 
                         <TextBlock FontWeight="Bold">Extends:</TextBlock>
-                        <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" />
+                        <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" Tapped="ExtendsListView_Tapped" />
 
                         <TextBlock FontWeight="Bold">Properties:</TextBlock>
                         <StackPanel Orientation="Horizontal">
