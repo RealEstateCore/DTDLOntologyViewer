@@ -76,7 +76,9 @@ namespace DTDLOntologyViewer.GUI
             if (File.GetAttributes(path) == System.IO.FileAttributes.Directory)
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                sourceFiles = directoryInfo.EnumerateFiles("*.json", SearchOption.AllDirectories);
+                var jsonFiles = directoryInfo.EnumerateFiles("*.json", SearchOption.AllDirectories);
+                var jsonLdFiles = directoryInfo.EnumerateFiles("*.jsonld", SearchOption.AllDirectories);
+                sourceFiles = jsonFiles.Union(jsonLdFiles);
             }
             else
             {
@@ -148,6 +150,7 @@ namespace DTDLOntologyViewer.GUI
 
             // Use file picker like normal!
             filePicker.FileTypeFilter.Add(".json");
+            filePicker.FileTypeFilter.Add(".jsonld");
             StorageFile pickedFile = await filePicker.PickSingleFileAsync();
 
             if (pickedFile != null)
