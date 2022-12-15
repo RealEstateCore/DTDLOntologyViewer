@@ -10,9 +10,6 @@ using System.IO;
 using Microsoft.Azure.DigitalTwins.Parser;
 using Microsoft.Azure.DigitalTwins.Parser.Models;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace DTDLOntologyViewer.GUI
 {
     /// <summary>
@@ -21,10 +18,10 @@ namespace DTDLOntologyViewer.GUI
     public sealed partial class MainWindow : Window
     {
         
-        public ObservableCollection<DTInterfaceWrapper> RootInterfaces { get; }
-        public IReadOnlyDictionary<Dtmi, DTEntityInfo> DTEntities;
+        private ObservableCollection<DTInterfaceWrapper> RootInterfaces { get; }
+        private IReadOnlyDictionary<Dtmi, DTEntityInfo> DTEntities;
         private string? _loadedPath;
-        public string? LoadedPath
+        private string? LoadedPath
         {
             get => _loadedPath;
             set
