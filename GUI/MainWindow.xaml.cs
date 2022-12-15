@@ -7,7 +7,6 @@ using System.Linq;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using System.IO;
-using System.Reflection;
 using Microsoft.Azure.DigitalTwins.Parser;
 using Microsoft.Azure.DigitalTwins.Parser.Models;
 
@@ -53,19 +52,6 @@ namespace DTDLOntologyViewer.GUI
             if (displayNames.ContainsKey("en")) return displayNames["en"];
             if (displayNames.Count > 0) return displayNames.First().Value;
             return dtInterface.Id.Labels.Last();
-        }
-
-        // Used to translate IEnumerable<DTDLInterface> from DTDLInterface.extendedBy property to a collection 
-        // that TreeView can ingest.
-        private static ObservableCollection<DTInterfaceInfo> IEnumerableToObservableCollection(IEnumerable<DTInterfaceInfo> members)
-        {
-            return new ObservableCollection<DTInterfaceInfo>(members);
-        }
-
-        private IEnumerable<DTInterfaceInfo> ExtendedBy(DTInterfaceInfo parent)
-        {
-            IEnumerable<DTInterfaceInfo> allInterfaces = DTEntities.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
-            return allInterfaces.Where(iFace => iFace.Extends.Contains(parent));
         }
 
         // Load a file or a directory of files from disk into the store; then update inheritance tree view
