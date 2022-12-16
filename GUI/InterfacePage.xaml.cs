@@ -63,6 +63,10 @@ namespace DTDLOntologyViewer.GUI
         {
             if (SelectedInterface != null)
             {
+                // Populate source view
+                SourceTextBox.Text = SelectedInterface.GetJsonLdText();
+
+                // Populate form view
                 FormHeader.Text = $"{MainWindow.Label(SelectedInterface)}";
                 DtmiTextBlock.Text = SelectedInterface.Id.AbsoluteUri;
 
@@ -104,6 +108,8 @@ namespace DTDLOntologyViewer.GUI
                     InheritedRelationshipsCollection.Add(relationship);
                 }
                 InheritedRelationshipsHeader.Visibility = InheritedRelationshipsCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+                // TODO: Populate visulization view
             }
         }
 

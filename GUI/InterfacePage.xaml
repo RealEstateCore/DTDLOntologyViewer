@@ -14,6 +14,10 @@
                                HorizontalAlignment="Stretch" 
                                FontWeight="Bold" x:Name="FormHeader"></TextBlock>
         <TabView VerticalAlignment="Stretch" IsAddTabButtonVisible="False">
+            <TabViewItem Header="Source view" IsClosable="False">
+                <TextBox x:Name="SourceTextBox" IsReadOnly="True" AcceptsReturn="true" FontFamily="Courier New" TextWrapping="Wrap">
+                </TextBox>
+            </TabViewItem>
             <TabViewItem Header="Form view" IsClosable="False">
                 <ScrollViewer VerticalScrollMode="Auto">
                     <StackPanel Orientation="Vertical" Padding="10" HorizontalAlignment="Left">
