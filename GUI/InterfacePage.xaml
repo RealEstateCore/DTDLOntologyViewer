@@ -25,7 +25,7 @@
         <TextBlock Margin="10,10,10,5" controls:DockPanel.Dock="Top"
                                HorizontalAlignment="Stretch" 
                                FontWeight="Bold" x:Name="FormHeader"></TextBlock>
-        <TabView VerticalAlignment="Stretch" IsAddTabButtonVisible="False">
+        <TabView VerticalAlignment="Stretch" IsAddTabButtonVisible="False" SelectedIndex="1">
             <TabViewItem Header="Source view" IsClosable="False">
                 <TextBox x:Name="SourceTextBox" IsReadOnly="True" AcceptsReturn="true" FontFamily="Courier New" TextWrapping="Wrap">
                 </TextBox>
