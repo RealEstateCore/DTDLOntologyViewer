@@ -2,7 +2,9 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -14,8 +16,8 @@ namespace DTDLOntologyViewer.GUI
     /// </summary>
     public sealed partial class InterfacePage : Page
     {
-        ObservableCollection<LocalizedString> DisplayNameCollection = new();
-        ObservableCollection<LocalizedString> DescriptionCollection = new();
+        ObservableCollection<KeyValuePair<string,string>> DisplayNameCollection = new();
+        ObservableCollection<KeyValuePair<string, string>> DescriptionCollection = new();
         ObservableCollection<DTPropertyInfo> DirectPropertiesCollection = new();
         ObservableCollection<DTPropertyInfo> InheritedPropertiesCollection = new();
         ObservableCollection<DTRelationshipInfo> DirectRelationshipsCollection = new();
@@ -59,6 +61,50 @@ namespace DTDLOntologyViewer.GUI
             InheritedRelationshipsCollection.Clear();
         }
 
+        public static string GetSchemaString(DTSchemaInfo schema, int depth=0)
+        {
+            string tabs = new string('\t', depth);
+            string indentedTabs = tabs + "\t";
+            switch (schema)
+            {
+                case DTBooleanInfo:
+                    return "boolean";
+                case DTDateInfo:
+                    return "date";
+                case DTDateTimeInfo:
+                    return "dateTime";
+                case DTDoubleInfo:
+                    return "double";
+                case DTDurationInfo:
+                    return "duration";
+                case DTFloatInfo:
+                    return "float";
+                case DTIntegerInfo:
+                    return "integer";
+                case DTLongInfo:
+                    return "long";
+                case DTStringInfo:
+                    return "string";
+                case DTTimeInfo:
+                    return "time";
+                case DTMapInfo map:
+                    string mapKeySchema = GetSchemaString(map.MapKey.Schema, depth+1);
+                    string mapValueSchema = GetSchemaString(map.MapValue.Schema, depth+1);
+                    return $"map (\n{indentedTabs}{mapKeySchema} -> {mapValueSchema}\n{tabs})";
+                case DTArrayInfo array:
+                    string arrayElementSchema = GetSchemaString(array.ElementSchema, depth+1);
+                    return $"array (\n{indentedTabs}{arrayElementSchema}\n)";
+                case DTEnumInfo enumSchema:
+                    string enumOptions = string.Join($", \n{indentedTabs}", enumSchema.EnumValues.Select(enumValue => enumValue.Name));
+                    return $"enum (\n{indentedTabs}{enumOptions}{tabs}\n)";
+                case DTObjectInfo objectSchema:
+                    string objectFields = string.Join($",\n{indentedTabs}",objectSchema.Fields.Select(field => $"{field.Name} ({GetSchemaString(field.Schema, depth + 1)}{indentedTabs})\n"));
+                    return $"object (\n{indentedTabs}{objectFields}\n{tabs})";
+                default:
+                    return schema.ToString() ?? schema.Id.ToString();
+            }
+        }
+
         private void PopulateFields()
         {
             if (SelectedInterface != null)
@@ -77,25 +123,23 @@ namespace DTDLOntologyViewer.GUI
 
                 foreach(var displayName in SelectedInterface.DisplayName)
                 {
-                    DisplayNameCollection.Add(new LocalizedString(displayName.Key, displayName.Value));
+                    DisplayNameCollection.Add(displayName);
                 }
 
                 foreach (var description in SelectedInterface.Description)
                 {
-                    DescriptionCollection.Add(new LocalizedString(description.Key, description.Value));
+                    DescriptionCollection.Add(description);
                 }
 
                 foreach (DTPropertyInfo property in SelectedInterface.DirectProperties())
                 {
                     DirectPropertiesCollection.Add(property);
                 }
-                DirectPropertiesHeader.Visibility = DirectPropertiesCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
                 foreach (DTPropertyInfo property in SelectedInterface.InheritedProperties())
                 {
                     InheritedPropertiesCollection.Add(property);
                 }
-                InheritedPropertiesHeader.Visibility = InheritedPropertiesCollection.Count > 0 ? Visibility.Visible: Visibility.Collapsed;
 
                 foreach (DTRelationshipInfo relationship in SelectedInterface.DirectRelationships())
                 {
