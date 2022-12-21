@@ -6,6 +6,10 @@ namespace DTDLOntologyViewer
 {
     public static class DigitalTwinsParserExtensions
     {
+        public static IEnumerable<DTInterfaceInfo> TransitiveExtends(this DTInterfaceInfo iface)
+        {
+            return iface.Extends.Concat(iface.Extends.SelectMany(parent => parent.TransitiveExtends()));
+        }
         public static IEnumerable<DTComponentInfo> InheritedComponents(this DTInterfaceInfo iface)
         {
             return iface.Contents.Values

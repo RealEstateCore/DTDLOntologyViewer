@@ -1,19 +1,12 @@
 ﻿using Microsoft.Azure.DigitalTwins.Parser.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace DTDLOntologyViewer.GUI
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class InterfacePage : Page
     {
         ObservableCollection<KeyValuePair<string,string>> DisplayNameCollection = new();
@@ -40,7 +33,6 @@ namespace DTDLOntologyViewer.GUI
                 if (_selectedInterface != null)
                 {
                     PopulateFields();
-                    MainWindow.ChangeInheritanceTreeSelection(_selectedInterface);
                 }
             }
         }
@@ -170,12 +162,34 @@ namespace DTDLOntologyViewer.GUI
             }
         }
 
-        private void ExtendsListView_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void DTMI_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            if (e.OriginalSource is TextBlock && ((TextBlock)e.OriginalSource).DataContext is DTInterfaceInfo)
+            if (e.OriginalSource is TextBlock)
             {
-                DTInterfaceInfo iface = (DTInterfaceInfo)((TextBlock)e.OriginalSource).DataContext;
-                SelectedInterface = iface;
+                TextBlock tb = (TextBlock)e.OriginalSource;
+                if (tb.DataContext is DTInterfaceInfo) { 
+                    DTInterfaceInfo iface = (DTInterfaceInfo)((TextBlock)e.OriginalSource).DataContext;
+                    SelectedInterface = iface;
+                    MainWindow.ChangeInheritanceTreeSelection(SelectedInterface);
+                }
+                else if (tb.DataContext is DTComponentInfo)
+                {
+                    DTComponentInfo component = (DTComponentInfo)tb.DataContext;
+                    SelectedInterface = component.Schema;
+                    MainWindow.ChangeInheritanceTreeSelection(SelectedInterface);
+                }
+                else if (tb.DataContext is DTRelationshipInfo)
+                {
+                    DTRelationshipInfo relationship = (DTRelationshipInfo)tb.DataContext;
+                    if (relationship.Target != null)
+                    {
+                        if (MainWindow.Ontology.ContainsKey(relationship.Target) && MainWindow.Ontology[relationship.Target] is DTInterfaceInfo)
+                        {
+                            SelectedInterface = (DTInterfaceInfo)MainWindow.Ontology[relationship.Target];
+                            MainWindow.ChangeInheritanceTreeSelection(SelectedInterface);
+                        }
+                    }
+                }
             }
         }
     }

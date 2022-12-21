@@ -9,6 +9,7 @@ using Windows.Storage;
 using System.IO;
 using Microsoft.Azure.DigitalTwins.Parser;
 using Microsoft.Azure.DigitalTwins.Parser.Models;
+using System.Threading.Tasks;
 
 namespace DTDLOntologyViewer.GUI
 {
@@ -19,7 +20,7 @@ namespace DTDLOntologyViewer.GUI
     {
         
         private ObservableCollection<DTInterfaceWrapper> RootInterfaces { get; }
-        private IReadOnlyDictionary<Dtmi, DTEntityInfo> DTEntities;
+        public IReadOnlyDictionary<Dtmi, DTEntityInfo> Ontology { get; set; }
         private string? _loadedPath;
         private string? LoadedPath
         {
@@ -39,7 +40,7 @@ namespace DTDLOntologyViewer.GUI
             this.InitializeComponent();
             this.Title = "DTDL Ontology Viewer";
             RootInterfaces = new ObservableCollection<DTInterfaceWrapper>();
-            DTEntities = new ReadOnlyDictionary<Dtmi, DTEntityInfo>(new Dictionary<Dtmi, DTEntityInfo>());
+            Ontology = new ReadOnlyDictionary<Dtmi, DTEntityInfo>(new Dictionary<Dtmi, DTEntityInfo>());
         }
 
         public static string Label(DTInterfaceInfo dtInterface)
@@ -79,16 +80,16 @@ namespace DTDLOntologyViewer.GUI
             ModelParser modelParser = new ModelParser(0);
 
             try { 
-                DTEntities = await modelParser.ParseAsync(modelJson);
+                Ontology = await modelParser.ParseAsync(modelJson);
 
                 // Update inheritance tree view
                 RootInterfaces.Clear();
 
-                IEnumerable<DTInterfaceInfo> allInterfaces = DTEntities.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
+                IEnumerable<DTInterfaceInfo> allInterfaces = Ontology.Values.Where(entity => entity is DTInterfaceInfo).Select(entity => (DTInterfaceInfo)entity);
                 IEnumerable<DTInterfaceInfo> noParentInterfaces = allInterfaces.Where(iface => !iface.Extends.Any(parentIface => allInterfaces.Contains(parentIface)));
                 foreach (DTInterfaceInfo dtdlInterface in noParentInterfaces)
                 {
-                    RootInterfaces.Add(new DTInterfaceWrapper(dtdlInterface, DTEntities));
+                    RootInterfaces.Add(new DTInterfaceWrapper(dtdlInterface, Ontology));
                 }
 
                 // Clear currently selected interface
@@ -164,12 +165,39 @@ namespace DTDLOntologyViewer.GUI
             }
         }
 
-        public void ChangeInheritanceTreeSelection(DTInterfaceInfo iface)
+        private async Task<TreeViewNode?> ExpandTree(IList<TreeViewNode> candidateNodes, DTInterfaceInfo targetIface)
         {
-            TreeViewNode? targetNode = InheritanceHierarchyView.RootNodes.SelectMany(rootNode => GetTransitiveChildren(rootNode)).FirstOrDefault(node => ((DTInterfaceWrapper)node.Content).WrappedInterface.Id == iface.Id);
-            if (targetNode != null)
+            foreach (TreeViewNode candidateNode in candidateNodes)
             {
-                InheritanceHierarchyView.SelectedNode = targetNode;
+                DTInterfaceInfo candidateNodeIface = ((DTInterfaceWrapper)candidateNode.Content).WrappedInterface;
+                if (candidateNodeIface.Id == targetIface.Id)
+                {
+                    InheritanceHierarchyView.Expand(candidateNode);
+                    return candidateNode;
+                }
+                else if (targetIface.TransitiveExtends().Any(targetParentIface => targetParentIface.Id == candidateNodeIface.Id))
+                {
+                    InheritanceHierarchyView.Expand(candidateNode);
+                    // This is to give time for the treeview to expand the node and populate the Children property used below
+                    // from the backing items source.
+                    await Task.Delay(100);
+                    return await ExpandTree(candidateNode.Children, targetIface);
+                }
+            }
+            return null;
+        }
+
+        public async void ChangeInheritanceTreeSelection(DTInterfaceInfo iface)
+        {
+            // We only traverse the tree if it is unselected or if something else than the intended target is currently selected
+            if (InheritanceHierarchyView.SelectedNode == null || ((DTInterfaceWrapper)InheritanceHierarchyView.SelectedNode.Content).WrappedInterface.Id != iface.Id)
+            {
+                TreeViewNode? targetNode = await ExpandTree(InheritanceHierarchyView.RootNodes, iface);
+                if (targetNode != null) { 
+                    InheritanceHierarchyView.SelectedNode = targetNode;
+                    var container = (TreeViewItem)InheritanceHierarchyView.ContainerFromNode(targetNode);
+                    container.StartBringIntoView();
+                }
             }
         }
 
