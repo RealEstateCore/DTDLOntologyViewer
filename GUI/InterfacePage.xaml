@@ -42,6 +42,70 @@
                         <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" Tapped="ExtendsListView_Tapped" />
 
                         <TextBlock FontWeight="Bold">Contents:</TextBlock>
+                        <!-- Components -->
+                        <Expander IsExpanded="False" ExpandDirection="Down" Header="Components" HorizontalAlignment="Stretch">
+                            <Expander.Content>
+                                <StackPanel Orientation="Vertical">
+                                    <controls:DataGrid ItemsSource="{x:Bind DirectComponentsCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
+                                        <controls:DataGrid.Columns>
+                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="SizeToCells"/>
+                                            <controls:DataGridTemplateColumn Header="Display name" Width="SizeToCells">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridTemplateColumn Header="Description" Width="2*">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridTemplateColumn Header="Schema" Width="SizeToCells">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate x:DataType="models:DTComponentInfo">
+                                                        <TextBlock Text="{x:Bind Schema.Id}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                        </controls:DataGrid.Columns>
+                                    </controls:DataGrid>
+                                    <!-- Inherited components -->
+                                    <Expander IsExpanded="False" ExpandDirection="Down" Header="Inherited" HorizontalAlignment="Stretch">
+                                        <Expander.Content>
+                                            <controls:DataGrid ItemsSource="{x:Bind InheritedComponentsCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
+                                                <controls:DataGrid.Columns>
+                                                    <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="SizeToCells" />
+                                                    <controls:DataGridTemplateColumn Header="Display name" Width="SizeToCells">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridTemplateColumn Header="Description" Width="2*">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridTemplateColumn Header="Schema" Width="SizeToCells">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate x:DataType="models:DTComponentInfo">
+                                                                <TextBlock Text="{x:Bind Schema.Id}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                </controls:DataGrid.Columns>
+                                            </controls:DataGrid>
+                                        </Expander.Content>
+                                    </Expander>
+                                </StackPanel>
+                            </Expander.Content>
+                        </Expander>
                         <!-- Properties -->
                         <Expander IsExpanded="False" ExpandDirection="Down" Header="Properties" HorizontalAlignment="Stretch">
                             <Expander.Content>

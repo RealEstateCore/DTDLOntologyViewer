@@ -18,6 +18,8 @@ namespace DTDLOntologyViewer.GUI
     {
         ObservableCollection<KeyValuePair<string,string>> DisplayNameCollection = new();
         ObservableCollection<KeyValuePair<string, string>> DescriptionCollection = new();
+        ObservableCollection<DTComponentInfo> DirectComponentsCollection = new();
+        ObservableCollection<DTComponentInfo> InheritedComponentsCollection = new();
         ObservableCollection<DTPropertyInfo> DirectPropertiesCollection = new();
         ObservableCollection<DTPropertyInfo> InheritedPropertiesCollection = new();
         ObservableCollection<DTRelationshipInfo> DirectRelationshipsCollection = new();
@@ -55,6 +57,8 @@ namespace DTDLOntologyViewer.GUI
             ExtendsCollection.Clear();
             DisplayNameCollection.Clear();
             DescriptionCollection.Clear();
+            DirectComponentsCollection.Clear();
+            InheritedComponentsCollection.Clear();
             DirectPropertiesCollection.Clear();
             InheritedPropertiesCollection.Clear();
             DirectRelationshipsCollection.Clear();
@@ -129,6 +133,16 @@ namespace DTDLOntologyViewer.GUI
                 foreach (var description in SelectedInterface.Description)
                 {
                     DescriptionCollection.Add(description);
+                }
+
+                foreach (DTComponentInfo component in SelectedInterface.DirectComponents())
+                {
+                    DirectComponentsCollection.Add(component);
+                }
+
+                foreach (DTComponentInfo component in SelectedInterface.InheritedComponents())
+                {
+                    InheritedComponentsCollection.Add(component);
                 }
 
                 foreach (DTPropertyInfo property in SelectedInterface.DirectProperties())
