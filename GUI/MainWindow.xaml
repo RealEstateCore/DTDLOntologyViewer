@@ -13,7 +13,7 @@
             <MenuBarItem Title="File">
                 <MenuFlyoutItem Text="Open file..." Click="OpenFile_Click"/>
                 <MenuFlyoutItem Text="Open folder..." Click="OpenFolder_Click"/>
-                <MenuFlyoutItem Text="Exit"/>
+                <MenuFlyoutItem Text="Exit" Click="Exit_Click"/>
             </MenuBarItem>
 
             <MenuBarItem Title="Help">

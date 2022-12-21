@@ -182,6 +182,11 @@ namespace DTDLOntologyViewer.GUI
         {
             return inputNode.Children.Prepend(inputNode).Concat(inputNode.Children.SelectMany(child => GetTransitiveChildren(child)));
         }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 
     public class DTInterfaceWrapper
