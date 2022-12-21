@@ -61,10 +61,13 @@ namespace DTDLOntologyViewer.GUI
             InheritedRelationshipsCollection.Clear();
         }
 
-        public static string GetSchemaString(DTSchemaInfo schema, int depth=0)
+        public static string GetNestedProperties(DTRelationshipInfo relationship)
         {
-            string tabs = new string('\t', depth);
-            string indentedTabs = tabs + "\t";
+            return string.Join(",\n", relationship.Properties.Select(prop => $"{prop.Name}( {GetSchemaString(prop.Schema)} )"));
+        }
+
+        public static string GetSchemaString(DTSchemaInfo schema)
+        {
             switch (schema)
             {
                 case DTBooleanInfo:
@@ -88,18 +91,18 @@ namespace DTDLOntologyViewer.GUI
                 case DTTimeInfo:
                     return "time";
                 case DTMapInfo map:
-                    string mapKeySchema = GetSchemaString(map.MapKey.Schema, depth+1);
-                    string mapValueSchema = GetSchemaString(map.MapValue.Schema, depth+1);
-                    return $"map (\n{indentedTabs}{mapKeySchema} -> {mapValueSchema}\n{tabs})";
+                    string mapKeySchema = GetSchemaString(map.MapKey.Schema);
+                    string mapValueSchema = GetSchemaString(map.MapValue.Schema);
+                    return $"map( {mapKeySchema} -> {mapValueSchema} )";
                 case DTArrayInfo array:
-                    string arrayElementSchema = GetSchemaString(array.ElementSchema, depth+1);
-                    return $"array (\n{indentedTabs}{arrayElementSchema}\n)";
+                    string arrayElementSchema = GetSchemaString(array.ElementSchema);
+                    return $"array( {arrayElementSchema} )";
                 case DTEnumInfo enumSchema:
-                    string enumOptions = string.Join($", \n{indentedTabs}", enumSchema.EnumValues.Select(enumValue => enumValue.Name));
-                    return $"enum (\n{indentedTabs}{enumOptions}{tabs}\n)";
+                    string enumOptions = string.Join($", ", enumSchema.EnumValues.Select(enumValue => enumValue.Name));
+                    return $"enum( {enumOptions} )";
                 case DTObjectInfo objectSchema:
-                    string objectFields = string.Join($",\n{indentedTabs}",objectSchema.Fields.Select(field => $"{field.Name} ({GetSchemaString(field.Schema, depth + 1)}{indentedTabs})\n"));
-                    return $"object (\n{indentedTabs}{objectFields}\n{tabs})";
+                    string objectFields = string.Join($",\n",objectSchema.Fields.Select(field => $"{field.Name}( {GetSchemaString(field.Schema)} )"));
+                    return $"object(\n{objectFields}\n)";
                 default:
                     return schema.ToString() ?? schema.Id.ToString();
             }
@@ -109,9 +112,6 @@ namespace DTDLOntologyViewer.GUI
         {
             if (SelectedInterface != null)
             {
-                // Populate source view
-                SourceTextBox.Text = SelectedInterface.GetJsonLdText();
-
                 // Populate form view
                 FormHeader.Text = $"{MainWindow.Label(SelectedInterface)}";
                 DtmiTextBlock.Text = SelectedInterface.Id.AbsoluteUri;
@@ -145,15 +145,14 @@ namespace DTDLOntologyViewer.GUI
                 {
                     DirectRelationshipsCollection.Add(relationship);
                 }
-                DirectRelationshipsHeader.Visibility = DirectRelationshipsCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
                 foreach (DTRelationshipInfo relationship in SelectedInterface.InheritedRelationships())
                 {
                     InheritedRelationshipsCollection.Add(relationship);
                 }
-                InheritedRelationshipsHeader.Visibility = InheritedRelationshipsCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-                // TODO: Populate visulization view
+                // Populate source view
+                SourceTextBox.Text = SelectedInterface.GetJsonLdText();
             }
         }
 

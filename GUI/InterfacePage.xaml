@@ -11,25 +11,21 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <DataTemplate x:Key="LocalizedStringListViewTemplate">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                 <TextBlock Text="{Binding Key}" FontWeight="Bold" />
                 <TextBlock Text=":" FontWeight="Bold" Margin="0,0,5,0" />
-                <TextBlock Text="{Binding Value}" MaxWidth="800" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Value}" MaxWidth="800" TextWrapping="WrapWholeWords"/>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="DTMIInterfaceListViewTemplate" x:DataType="models:DTInterfaceInfo">
-            <TextBlock Text="{x:Bind Id.AbsoluteUri}" x:Phase="1" Margin="0,5,0,5"/>
+            <TextBlock Text="{x:Bind Id.AbsoluteUri}" x:Phase="1" FontFamily="Courier New" Margin="0,5,0,5"/>
         </DataTemplate>
     </Page.Resources>
     <controls:DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <TextBlock Margin="10,10,10,5" controls:DockPanel.Dock="Top"
                                HorizontalAlignment="Stretch" 
                                FontWeight="Bold" x:Name="FormHeader"></TextBlock>
-        <TabView VerticalAlignment="Stretch" IsAddTabButtonVisible="False" SelectedIndex="1">
-            <TabViewItem Header="Source view" IsClosable="False">
-                <TextBox x:Name="SourceTextBox" IsReadOnly="True" AcceptsReturn="true" FontFamily="Courier New" TextWrapping="Wrap">
-                </TextBox>
-            </TabViewItem>
+        <TabView VerticalAlignment="Stretch" IsAddTabButtonVisible="False">
             <TabViewItem Header="Form view" IsClosable="False">
                 <ScrollViewer VerticalScrollMode="Auto">
                     <StackPanel Orientation="Vertical" Padding="10" HorizontalAlignment="Stretch">
@@ -46,184 +42,163 @@
                         <ListView x:Name="ExtendsListView" ItemsSource="{x:Bind ExtendsCollection}" ItemTemplate="{StaticResource DTMIInterfaceListViewTemplate}" Margin="0,0,0,10" Tapped="ExtendsListView_Tapped" />
 
                         <TextBlock FontWeight="Bold">Contents:</TextBlock>
+                        <!-- Properties -->
                         <Expander IsExpanded="False" ExpandDirection="Down" Header="Properties" HorizontalAlignment="Stretch">
                             <Expander.Content>
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="Direct" Margin="0,0,0,10" TextDecorations="Underline" />
                                     <controls:DataGrid ItemsSource="{x:Bind DirectPropertiesCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
                                         <controls:DataGrid.Columns>
-                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                            <controls:DataGridTemplateColumn Header="Display name"  Width="2*">
+                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="SizeToCells"/>
+                                            <controls:DataGridTemplateColumn Header="Display name" Width="SizeToCells">
                                                 <controls:DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
                                                     </DataTemplate>
                                                 </controls:DataGridTemplateColumn.CellTemplate>
                                             </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTemplateColumn Header="Description" Width="4*">
+                                            <controls:DataGridTemplateColumn Header="Description" Width="2*">
                                                 <controls:DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
                                                     </DataTemplate>
                                                 </controls:DataGridTemplateColumn.CellTemplate>
                                             </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTemplateColumn Header="Schema" Width="3*">
+                                            <controls:DataGridTemplateColumn Header="Schema" Width="1*">
                                                 <controls:DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate x:DataType="models:DTPropertyInfo">
-                                                        <TextBlock Text="{x:Bind local:InterfacePage.GetSchemaString((models:DTPropertyInfo).Schema,0)}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
+                                                        <TextBlock Text="{x:Bind local:InterfacePage.GetSchemaString((models:DTPropertyInfo).Schema)}" MaxWidth="400" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
                                                     </DataTemplate>
                                                 </controls:DataGridTemplateColumn.CellTemplate>
                                             </controls:DataGridTemplateColumn>
                                             <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
                                         </controls:DataGrid.Columns>
                                     </controls:DataGrid>
-                                    <TextBlock Text="Inherited" Margin="0,0,0,10" TextDecorations="Underline" />
-                                    <controls:DataGrid ItemsSource="{x:Bind InheritedPropertiesCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
-                                        <controls:DataGrid.Columns>
-                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                                            <controls:DataGridTemplateColumn Header="Display name" Width="2*">
-                                                <controls:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
-                                                    </DataTemplate>
-                                                </controls:DataGridTemplateColumn.CellTemplate>
-                                            </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTemplateColumn Header="Description" Width="4*">
-                                                <controls:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
-                                                    </DataTemplate>
-                                                </controls:DataGridTemplateColumn.CellTemplate>
-                                            </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTemplateColumn Header="Schema"  Width="3*">
-                                                <controls:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate x:DataType="models:DTPropertyInfo">
-                                                        <TextBlock Text="{x:Bind local:InterfacePage.GetSchemaString((models:DTPropertyInfo).Schema,0)}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" />
-                                                    </DataTemplate>
-                                                </controls:DataGridTemplateColumn.CellTemplate>
-                                            </controls:DataGridTemplateColumn>
-                                            <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
-                                        </controls:DataGrid.Columns>
-                                    </controls:DataGrid>
+                                    <!-- Inherited properties -->
+                                    <Expander IsExpanded="False" ExpandDirection="Down" Header="Inherited" HorizontalAlignment="Stretch">
+                                        <Expander.Content>
+                                            <controls:DataGrid ItemsSource="{x:Bind InheritedPropertiesCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
+                                                <controls:DataGrid.Columns>
+                                                    <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="SizeToCells" />
+                                                    <controls:DataGridTemplateColumn Header="Display name" Width="SizeToCells">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridTemplateColumn Header="Description" Width="2*">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridTemplateColumn Header="Schema" Width="1*">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate x:DataType="models:DTPropertyInfo">
+                                                                <TextBlock Text="{x:Bind local:InterfacePage.GetSchemaString((models:DTPropertyInfo).Schema)}" MaxWidth="400" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
+                                                </controls:DataGrid.Columns>
+                                            </controls:DataGrid>
+                                        </Expander.Content>
+                                    </Expander>
                                 </StackPanel>
                             </Expander.Content>
                         </Expander>
+                        <!-- Relationships -->
                         <Expander IsExpanded="False" ExpandDirection="Down" Header="Relationships" HorizontalAlignment="Stretch">
                             <Expander.Content>
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="Direct" Margin="0,0,0,10" TextDecorations="Underline" />
                                     <controls:DataGrid ItemsSource="{x:Bind DirectRelationshipsCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
                                         <controls:DataGrid.Columns>
-                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                            <controls:DataGridTemplateColumn Header="Display name"  Width="2*">
+                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="SizeToCells"/>
+                                            <controls:DataGridTemplateColumn Header="Display name" Width="SizeToCells">
                                                 <controls:DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
                                                     </DataTemplate>
                                                 </controls:DataGridTemplateColumn.CellTemplate>
                                             </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTemplateColumn Header="Description" Width="4*">
+                                            <controls:DataGridTemplateColumn Header="Description" Width="2*">
                                                 <controls:DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
                                                     </DataTemplate>
                                                 </controls:DataGridTemplateColumn.CellTemplate>
                                             </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTextColumn Header="Max multiplicity" Binding="{Binding MaxMultiplicity}" />
-                                            <controls:DataGridTemplateColumn Header="Target" Width="3*">
+                                            <controls:DataGridTextColumn Header="Max multiplicity" Binding="{Binding MaxMultiplicity}" Width="SizeToCells" />
+                                            <controls:DataGridTemplateColumn Header="Target" Width="SizeToCells">
                                                 <controls:DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate x:DataType="models:DTRelationshipInfo">
                                                         <TextBlock Text="{x:Bind Target}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
                                                     </DataTemplate>
                                                 </controls:DataGridTemplateColumn.CellTemplate>
                                             </controls:DataGridTemplateColumn>
-                                            <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
-                                        </controls:DataGrid.Columns>
-                                    </controls:DataGrid>
-                                    <TextBlock Text="Inherited" Margin="0,0,0,10" TextDecorations="Underline" />
-                                    <controls:DataGrid ItemsSource="{x:Bind InheritedRelationshipsCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
-                                        <controls:DataGrid.Columns>
-                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                                            <controls:DataGridTemplateColumn Header="Display name" Width="2*">
-                                                <controls:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
-                                                    </DataTemplate>
-                                                </controls:DataGridTemplateColumn.CellTemplate>
-                                            </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTemplateColumn Header="Description" Width="4*">
-                                                <controls:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
-                                                    </DataTemplate>
-                                                </controls:DataGridTemplateColumn.CellTemplate>
-                                            </controls:DataGridTemplateColumn>
-                                            <controls:DataGridTextColumn Header="Max multiplicity" Binding="{Binding MaxMultiplicity}" />
-                                            <controls:DataGridTemplateColumn Header="Target"  Width="3*">
+                                            <controls:DataGridTemplateColumn Header="Properties" Width="1*">
                                                 <controls:DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                                        <TextBlock Text="{x:Bind Target}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" />
+                                                        <TextBlock Text="{x:Bind local:InterfacePage.GetNestedProperties((models:DTRelationshipInfo))}" MaxWidth="400" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
                                                     </DataTemplate>
                                                 </controls:DataGridTemplateColumn.CellTemplate>
                                             </controls:DataGridTemplateColumn>
-                                            <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
+                                            <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader"/>
                                         </controls:DataGrid.Columns>
                                     </controls:DataGrid>
+                                    <!-- Inherited relationships -->
+                                    <Expander IsExpanded="False" ExpandDirection="Down" Header="Inherited" HorizontalAlignment="Stretch">
+                                        <Expander.Content>
+                                            <controls:DataGrid ItemsSource="{x:Bind InheritedRelationshipsCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
+                                                <controls:DataGrid.Columns>
+                                                    <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="SizeToCells" />
+                                                    <controls:DataGridTemplateColumn Header="Display name" Width="SizeToCells">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridTemplateColumn Header="Description" Width="2*">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridTextColumn Header="Max multiplicity" Binding="{Binding MaxMultiplicity}" Width="SizeToCells" />
+                                                    <controls:DataGridTemplateColumn Header="Target" Width="SizeToCells">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                                                <TextBlock Text="{x:Bind Target}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridTemplateColumn Header="Properties" Width="1*">
+                                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                                                <TextBlock Text="{x:Bind local:InterfacePage.GetNestedProperties((models:DTRelationshipInfo))}" MaxWidth="400" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
+                                                            </DataTemplate>
+                                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                                    </controls:DataGridTemplateColumn>
+                                                    <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
+                                                </controls:DataGrid.Columns>
+                                            </controls:DataGrid>
+                                        </Expander.Content>
+                                    </Expander>
                                 </StackPanel>
                             </Expander.Content>
                         </Expander>
-
-                        <TextBlock FontWeight="Bold">Relationships:</TextBlock>
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock x:Name="DirectRelationshipsHeader" TextDecorations="Underline">Direct</TextBlock>
-                                <ListView x:Name="DirectRelationshipsView" ItemsSource="{x:Bind DirectRelationshipsCollection}" Margin="0,0,0,10">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                            <TextBlock>
-                                                <Run Text="{x:Bind Name}"/>
-                                                <Run> --> [</Run>
-                                                <Run Text="{x:Bind MinMultiplicity}" />
-                                                <Run>-</Run>
-                                                <Run Text="{x:Bind MaxMultiplicity}" />
-                                                <Run>] </Run>
-                                                <Run Text="{x:Bind Target}" />
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock x:Name="InheritedRelationshipsHeader" TextDecorations="Underline">Inherited</TextBlock>
-                                <ListView x:Name="InheritedRelationshipsView" ItemsSource="{x:Bind InheritedRelationshipsCollection}" Margin="0,0,0,10">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="models:DTRelationshipInfo">
-                                            <TextBlock>
-                                                <Run Text="{x:Bind Name}"/>
-                                                <Run> --> [</Run>
-                                                <Run Text="{x:Bind MinMultiplicity}" />
-                                                <Run>-</Run>
-                                                <Run Text="{x:Bind MaxMultiplicity}" />
-                                                <Run>] </Run>
-                                                <Run Text="{x:Bind Target}" />
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </StackPanel>
-                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
+            </TabViewItem>
 
+            <TabViewItem Header="Source view" IsClosable="False">
+                <TextBox x:Name="SourceTextBox" IsReadOnly="True" AcceptsReturn="true" FontFamily="Courier New" TextWrapping="Wrap" HorizontalAlignment="Stretch" />
             </TabViewItem>
-            <TabViewItem Header="Visualization view" IsClosable="False">
-                <TextBlock Margin="10">
-                            Visualization view goes here.
-                </TextBlock>
-            </TabViewItem>
+
         </TabView>
     </controls:DockPanel>
-
-        
 
 </Page>
