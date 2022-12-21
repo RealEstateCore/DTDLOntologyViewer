@@ -110,17 +110,66 @@
                         </Expander>
                         <Expander IsExpanded="False" ExpandDirection="Down" Header="Relationships" HorizontalAlignment="Stretch">
                             <Expander.Content>
-                                <ListView x:Name="DirectPropertiesView3" ItemsSource="{x:Bind DirectPropertiesCollection}" Margin="0,0,0,10">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate x:DataType="models:DTPropertyInfo">
-                                            <TextBlock>
-                                                <Run Text="{x:Bind Name}"/>
-                                                <Run> --> [</Run>
-                                                <Run Text="{x:Bind Schema}" />
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="Direct" Margin="0,0,0,10" TextDecorations="Underline" />
+                                    <controls:DataGrid ItemsSource="{x:Bind DirectRelationshipsCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
+                                        <controls:DataGrid.Columns>
+                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                            <controls:DataGridTemplateColumn Header="Display name"  Width="2*">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridTemplateColumn Header="Description" Width="4*">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridTextColumn Header="Max multiplicity" Binding="{Binding MaxMultiplicity}" />
+                                            <controls:DataGridTemplateColumn Header="Target" Width="3*">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                                        <TextBlock Text="{x:Bind Target}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" FontFamily="Courier New" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
+                                        </controls:DataGrid.Columns>
+                                    </controls:DataGrid>
+                                    <TextBlock Text="Inherited" Margin="0,0,0,10" TextDecorations="Underline" />
+                                    <controls:DataGrid ItemsSource="{x:Bind InheritedRelationshipsCollection}" AutoGenerateColumns="False" Margin="0,0,0,20" HorizontalAlignment="Stretch">
+                                        <controls:DataGrid.Columns>
+                                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                                            <controls:DataGridTemplateColumn Header="Display name" Width="2*">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ListView ItemsSource="{Binding DisplayName}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridTemplateColumn Header="Description" Width="4*">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ListView ItemsSource="{Binding Description}" ItemTemplate="{StaticResource LocalizedStringListViewTemplate}" VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridTextColumn Header="Max multiplicity" Binding="{Binding MaxMultiplicity}" />
+                                            <controls:DataGridTemplateColumn Header="Target"  Width="3*">
+                                                <controls:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate x:DataType="models:DTRelationshipInfo">
+                                                        <TextBlock Text="{x:Bind Target}" TextWrapping="WrapWholeWords" VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </controls:DataGridTemplateColumn.CellTemplate>
+                                            </controls:DataGridTemplateColumn>
+                                            <controls:DataGridCheckBoxColumn Header="Writable" Binding="{Binding Writable}" Width="SizeToHeader" />
+                                        </controls:DataGrid.Columns>
+                                    </controls:DataGrid>
+                                </StackPanel>
                             </Expander.Content>
                         </Expander>
 
