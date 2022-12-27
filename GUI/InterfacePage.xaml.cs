@@ -115,27 +115,68 @@ namespace DTDLOntologyViewer.GUI
         {
             var drawingGraph = new Graph();
             
-            // Create the logical structure of the graph. No rendering hints possible yet.
+            // Create the logical structure of the graph. No geometry hints possible yet, only attributes (color etc)
             var selectedInterfaceId = selectedInterface.Id.ToString();
-            drawingGraph.AddNode(selectedInterfaceId).LabelText = MainWindow.Label(selectedInterface);
+            Node selectedInterfaceNode = drawingGraph.AddNode(selectedInterfaceId);
+            selectedInterfaceNode.LabelText = MainWindow.Label(selectedInterface);
+            selectedInterfaceNode.Attr.FillColor = Color.Moccasin;
+            selectedInterfaceNode.Attr.Color = Color.Black;
             foreach (DTRelationshipInfo relationship in selectedInterface.DirectRelationships().Where(rel => rel.Target != null))
             {
                 DTInterfaceInfo targetInterface = (DTInterfaceInfo)MainWindow.Ontology[relationship.Target];
                 var targetInterfaceId = targetInterface.Id.ToString();
-                drawingGraph.AddNode(targetInterfaceId).LabelText = MainWindow.Label(targetInterface);
-
+                Node targetNode = drawingGraph.AddNode(targetInterfaceId);
+                targetNode.LabelText = MainWindow.Label(targetInterface);
+                if (targetInterfaceId != selectedInterfaceId)
+                {
+                    targetNode.Attr.Color = Color.Black;
+                    targetNode.Attr.FillColor = Color.Linen;
+                }
                 var edge = drawingGraph.AddEdge(selectedInterfaceId, targetInterfaceId);
                 edge.LabelText = relationship.Name;
             }
+            foreach (DTInterfaceInfo parent in selectedInterface.Extends)
+            {
+                var parentInterfaceId = parent.Id.ToString();
+                Node parentNode = drawingGraph.AddNode(parentInterfaceId);
+                parentNode.LabelText = MainWindow.Label(parent);
+                parentNode.Attr.FillColor = Color.BurlyWood;
+                var edge = drawingGraph.AddEdge(selectedInterfaceId, parentInterfaceId);
+                edge.LabelText = "extends";
+                edge.Attr.ArrowheadAtTarget = ArrowStyle.Generalization;
+            }
+            // This is probably horribly inefficient
+            foreach (DTInterfaceInfo child in MainWindow.Ontology.Values
+                .Where(entity => entity is DTInterfaceInfo)
+                .Select(entity => (DTInterfaceInfo)entity)
+                .Where(child => child.Extends.Select(childParent => childParent.Id).Contains(selectedInterface.Id)))
+            {
+                var childInterfaceId = child.Id.ToString();
+                Node childNode = drawingGraph.AddNode(childInterfaceId);
+                childNode.LabelText = MainWindow.Label(child);
+                childNode.Attr.FillColor = Color.LightYellow;
+                var edge = drawingGraph.AddEdge(childInterfaceId, selectedInterfaceId);
+                edge.LabelText = "extends";
+            }
+            foreach (DTComponentInfo component in selectedInterface.DirectComponents())
+            {
+                var componentInterface = component.Schema;
+                var componentInterfaceId = componentInterface.Id.ToString();
+                var componentInterfaceLabel = MainWindow.Label(componentInterface);
+                Node componentNode = drawingGraph.AddNode(componentInterfaceId);
+                componentNode.LabelText = "Component:\n" + componentInterfaceLabel;
+                componentNode.Attr.FillColor = Color.PaleVioletRed;
+                var edge = drawingGraph.AddEdge(selectedInterfaceId, componentInterfaceId);
+                edge.LabelText = component.Name;
+            }
 
-            // Create geometries corresponding to logical structure. From here we can configure how the graph is rendered.
+            // Create geometries corresponding to logical structure.
             drawingGraph.CreateGeometryGraph();
 
             // Configure how we want the graph to look.
             foreach (var node in drawingGraph.Nodes)
             {
-                node.Attr.Color = Color.Coral;
-                node.GeometryNode.BoundaryCurve = CurveFactory.CreateRectangleWithRoundedCorners(180, 80, 3, 2, new Point(0, 0));
+                node.GeometryNode.BoundaryCurve = CurveFactory.CreateRectangleWithRoundedCorners(200, 80, 3, 2, new Point(0, 0));
                 node.Label.Width = node.Width * 0.6;
                 node.Label.Height = node.Height * 0.6;
             }
