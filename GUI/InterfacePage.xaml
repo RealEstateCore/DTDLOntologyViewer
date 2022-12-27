@@ -26,6 +26,9 @@
                                HorizontalAlignment="Stretch" 
                                FontWeight="Bold" x:Name="FormHeader"></TextBlock>
         <TabView VerticalAlignment="Stretch" IsAddTabButtonVisible="False">
+            <TabViewItem Header="Visualization view" VerticalAlignment="Stretch">
+                <WebView2 x:Name="visualizationWebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            </TabViewItem>
             <TabViewItem Header="Form view" IsClosable="False">
                 <ScrollViewer VerticalScrollMode="Auto">
                     <StackPanel Orientation="Vertical" Padding="10" HorizontalAlignment="Stretch">

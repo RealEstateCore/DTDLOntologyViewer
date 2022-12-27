@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutomaticGraphLayout.WpfGraphControl" Version="1.1.12" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="Microsoft.Azure.DigitalTwins.Parser" Version="6.4.0-preview" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />

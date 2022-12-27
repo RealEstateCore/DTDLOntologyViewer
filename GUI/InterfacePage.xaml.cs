@@ -1,8 +1,15 @@
 ﻿using Microsoft.Azure.DigitalTwins.Parser.Models;
+using Microsoft.Msagl.Core.Geometry;
+using Microsoft.Msagl.Core.Geometry.Curves;
+using Microsoft.Msagl.Drawing;
+using Microsoft.Msagl.Layout.Layered;
+using Microsoft.Msagl.Miscellaneous;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace DTDLOntologyViewer.GUI
@@ -104,10 +111,69 @@ namespace DTDLOntologyViewer.GUI
             }
         }
 
-        private void PopulateFields()
+        private Graph ConstructVisualizationGraph(DTInterfaceInfo selectedInterface)
+        {
+            var drawingGraph = new Graph();
+            
+            // Create the logical structure of the graph. No rendering hints possible yet.
+            var selectedInterfaceId = selectedInterface.Id.ToString();
+            drawingGraph.AddNode(selectedInterfaceId).LabelText = MainWindow.Label(selectedInterface);
+            foreach (DTRelationshipInfo relationship in selectedInterface.DirectRelationships().Where(rel => rel.Target != null))
+            {
+                DTInterfaceInfo targetInterface = (DTInterfaceInfo)MainWindow.Ontology[relationship.Target];
+                var targetInterfaceId = targetInterface.Id.ToString();
+                drawingGraph.AddNode(targetInterfaceId).LabelText = MainWindow.Label(targetInterface);
+
+                var edge = drawingGraph.AddEdge(selectedInterfaceId, targetInterfaceId);
+                edge.LabelText = relationship.Name;
+            }
+
+            // Create geometries corresponding to logical structure. From here we can configure how the graph is rendered.
+            drawingGraph.CreateGeometryGraph();
+
+            // Configure how we want the graph to look.
+            foreach (var node in drawingGraph.Nodes)
+            {
+                node.Attr.Color = Color.Coral;
+                node.GeometryNode.BoundaryCurve = CurveFactory.CreateRectangleWithRoundedCorners(180, 80, 3, 2, new Point(0, 0));
+                node.Label.Width = node.Width * 0.6;
+                node.Label.Height = node.Height * 0.6;
+            }
+            foreach (var de in drawingGraph.Edges)
+            {
+                de.Label.GeometryLabel.Width = 180;
+                de.Label.GeometryLabel.Height = 80;
+                de.Label.FontColor = Color.Black;
+            }
+            LayoutHelpers.CalculateLayout(drawingGraph.GeometryGraph, new SugiyamaLayoutSettings(), null);
+
+            return drawingGraph;
+        }
+
+        private string GraphToSVG(Graph vizGraph)
+        {
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            var svgWriter = new SvgGraphWriter(writer.BaseStream, vizGraph);
+            svgWriter.Write();
+            // get the string from MemoryStream
+            ms.Position = 0;
+            var sr = new StreamReader(ms);
+            var rawSvg = sr.ReadToEnd();
+            var svgWithoutXmlHeader = rawSvg.Substring(rawSvg.IndexOf("\n")).Trim();
+            return svgWithoutXmlHeader;
+        }
+
+        private async void PopulateFields()
         {
             if (SelectedInterface != null)
             {
+                // Populate visualization
+                Graph vizGraph = ConstructVisualizationGraph(SelectedInterface);
+                string svg = GraphToSVG(vizGraph);
+                await visualizationWebView.EnsureCoreWebView2Async();
+                visualizationWebView.NavigateToString(svg);
+
                 // Populate form view
                 FormHeader.Text = $"{MainWindow.Label(SelectedInterface)}";
                 DtmiTextBlock.Text = SelectedInterface.Id.AbsoluteUri;
